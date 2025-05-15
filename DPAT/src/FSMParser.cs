@@ -4,7 +4,7 @@ class FSMParser {
         var states = new List<IState>();
 
         foreach (var line in lines) {
-            System.Console.WriteLine(line);
+            Console.WriteLine(line);
         }
     }
 }
