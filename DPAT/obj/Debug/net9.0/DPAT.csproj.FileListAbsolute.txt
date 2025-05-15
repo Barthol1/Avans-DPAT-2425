@@ -1,0 +1,15 @@
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\obj\Debug\net9.0\DPAT.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\obj\Debug\net9.0\DPAT.AssemblyInfoInputs.cache
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\obj\Debug\net9.0\DPAT.AssemblyInfo.cs
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\obj\Debug\net9.0\DPAT.csproj.CoreCompileInputs.cache
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\obj\Debug\net9.0\DPAT.sourcelink.json
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\bin\Debug\net9.0\DPAT.exe
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\bin\Debug\net9.0\DPAT.deps.json
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\bin\Debug\net9.0\DPAT.runtimeconfig.json
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\bin\Debug\net9.0\DPAT.dll
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\bin\Debug\net9.0\DPAT.pdb
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\obj\Debug\net9.0\DPAT.dll
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\obj\Debug\net9.0\refint\DPAT.dll
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\obj\Debug\net9.0\DPAT.pdb
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\obj\Debug\net9.0\DPAT.genruntimeconfig.cache
+C:\Users\bart.hol\Documents\Avans-DPAT-2425\DPAT\obj\Debug\net9.0\ref\DPAT.dll

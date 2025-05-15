@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DPAT")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6ee4e0d6a3a62da9062e679b12d4414a4102e060")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b44cef2c0abba17747105e91744d4243a75d7b61")]
 [assembly: System.Reflection.AssemblyProductAttribute("DPAT")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DPAT")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
