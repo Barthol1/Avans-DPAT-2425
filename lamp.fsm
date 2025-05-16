@@ -31,8 +31,8 @@ ACTION t2 "reset off timer" : TRANSITION_ACTION;
 # Description of all the transitions
 #
 
-TRANSITION t1 initial off power_on;
-TRANSITION t2 off on push_switch "time off > 10s";
-TRANSITION t3 on off push_switch;
-TRANSITION t4 powered final power_off;
+TRANSITION t1 initial -> off power_on "";
+TRANSITION t2 off -> on push_switch "time off > 10s";
+TRANSITION t3 on -> off push_switch "";
+TRANSITION t4 powered -> final power_off "";
 
