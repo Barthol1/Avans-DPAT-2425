@@ -1,4 +1,4 @@
-namespace DPAT.Models
+namespace DPAT.Domain.Interfaces
 {
     public interface IFSMValidator
     {

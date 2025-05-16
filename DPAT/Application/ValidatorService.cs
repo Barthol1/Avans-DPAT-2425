@@ -1,4 +1,7 @@
-namespace DPAT.Models
+using DPAT.Domain;
+using DPAT.Domain.Interfaces;
+
+namespace DPAT.Application
 {
     public class ValidatorService
     {

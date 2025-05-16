@@ -1,12 +1,14 @@
-namespace DPAT.Models
+using DPAT.Domain.Interfaces;
+
+namespace DPAT.Domain
 {
-    class FinalState : IState
+    class SimpleState : IState
     {
         public string Name { get; set; }
         public IState? Parent { get; set; }
         public string Identifier { get; set; }
 
-        public FinalState(string identifier, string name)
+        public SimpleState(string identifier, string name)
         {
             Identifier = identifier;
             Name = name;
