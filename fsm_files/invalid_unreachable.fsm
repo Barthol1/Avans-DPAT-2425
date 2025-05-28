@@ -1,0 +1,15 @@
+# 
+# The FSM in this file is invalid. State 2 is unreachable
+
+STATE initial _ "" : INITIAL;
+STATE compound _ "Compound state" : COMPOUND;
+STATE state1 compound "State 1" : SIMPLE;
+STATE state2 _ "State 2" : SIMPLE;
+STATE state3  compound "State 3" : SIMPLE;
+STATE final _ "" : FINAL;
+
+TRANSITION t1 initial -> state1 "";
+TRANSITION t2 state1 -> state3 "";
+TRANSITION t3 state2 -> state3 "";
+TRANSITION t4 state3 -> final "";
+

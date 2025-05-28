@@ -1,0 +1,13 @@
+# 
+# The FSM in this file is invalid. The guard conditions are not deterministic
+
+STATE state1 _ "State1" : SIMPLE;
+STATE state2 _ "State2" : SIMPLE;
+STATE state3 _ "State3" : SIMPLE;
+STATE state4 _ "State4" : SIMPLE;
+TRIGGER mouse_click "mouse click";
+TRIGGER key_press "key press";
+TRANSITION t1 state1 -> state2 key_press "key = a";
+TRANSITION t2 state1 -> state3 mouse_click "";
+TRANSITION t3 state1 -> state4 key_press "key = a";
+

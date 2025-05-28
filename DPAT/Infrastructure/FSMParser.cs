@@ -8,10 +8,9 @@ namespace DPAT.Infrastructure
 {
     public class FSMParser
     {
-        private List<IState> _states = [];
-        private List<Transition> _transitions = [];
-        private List<Action> _actions = [];
-        private List<Trigger> _triggers = [];
+        private readonly List<IState> _states = [];
+        private readonly List<Action> _actions = [];
+        private readonly List<Trigger> _triggers = [];
 
         public FSM ParseFile(string filePath)
         {
@@ -47,7 +46,6 @@ namespace DPAT.Infrastructure
             return new FSM
             {
                 States = _states,
-                Transitions = _transitions,
                 Actions = _actions,
                 Triggers = _triggers
             };
@@ -99,7 +97,7 @@ namespace DPAT.Infrastructure
             var match = Regex.Match(line, transitionRegexPattern);
             if (!match.Success)
             {
-                throw new Exception("Invalid transition line");
+                throw new Exception("Invalid transition line: " + line);
             }
 
             var transitionId = match.Groups[1].Value;
@@ -108,24 +106,16 @@ namespace DPAT.Infrastructure
             var triggerId = match.Groups[4].Value;
             var guard = match.Groups[5].Value;
 
-            IState? source = _states.FirstOrDefault(s => s.Identifier == sourceId);
-            IState? destination = _states.FirstOrDefault(s => s.Identifier == destinationId);
+            var source = _states.Find(s => s.Identifier == sourceId);
+            var destination = _states.Find(s => s.Identifier == destinationId);
 
             if (source == null || destination == null)
             {
                 throw new Exception("States required for transition not found");
             }
 
-            Transition transition = new Transition
-            {
-                Id = transitionId,
-                Source = source,
-                Destination = destination,
-                Trigger = triggerId,
-                Guard = guard
-            };
-
-            _transitions.Add(transition);
+            source.Outgoing.Add(destination);
+            destination.Incoming.Add(source);
 
         }
 
@@ -151,7 +141,7 @@ namespace DPAT.Infrastructure
                 _ => throw new Exception("Invalid action type")
             };
 
-            Action action = new Action
+            Action action = new()
             {
                 Id = actionId,
                 Description = actionDescription,
@@ -173,7 +163,7 @@ namespace DPAT.Infrastructure
             var triggerId = match.Groups[1].Value;
             var triggerDescription = match.Groups[2].Value;
 
-            Trigger trigger = new Trigger
+            Trigger trigger = new()
             {
                 Id = triggerId,
                 Description = triggerDescription

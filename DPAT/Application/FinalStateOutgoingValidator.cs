@@ -7,6 +7,14 @@ namespace DPAT.Application
     {
         public bool Validate(FSM fsm)
         {
+            var finalStates = fsm.States.Where(s => s is FinalState).ToList();
+            foreach (var finalState in finalStates)
+            {
+                if (finalState.Outgoing.Count > 0)
+                {
+                    return false;
+                }
+            }
             return true;
         }
     }

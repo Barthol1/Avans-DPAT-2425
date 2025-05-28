@@ -1,0 +1,12 @@
+# 
+# The FSM in this file is valid. Transitions end at simple states inside a compound state
+
+STATE initial _ "" : INITIAL;
+STATE compound _ "Compound state" : COMPOUND;
+STATE state2 compound "State 2" : SIMPLE;
+STATE state3  compound "State 3" : SIMPLE;
+STATE final _ "" : FINAL;
+
+TRANSITION t1 initial -> state2 "";
+TRANSITION t2 compound -> final "";
+

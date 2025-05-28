@@ -1,0 +1,11 @@
+# 
+# The FSM in this file is invalid. Transitions to initial states are not allowed
+
+STATE initial _ "" : INITIAL;
+STATE state1 _ "State1" : SIMPLE;
+
+TRIGGER reset "reset";
+
+TRANSITION t1 initial -> state1 "";
+TRANSITION t2 state1 -> initial reset "";
+

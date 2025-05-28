@@ -1,0 +1,39 @@
+# Timed light
+# This file contains an example FSM
+
+#
+# Description of all the states
+#
+
+STATE initial _ "powered off" : INITIAL;
+STATE powered _ "Powered up" : COMPOUND;
+STATE off powered "Lamp is off" : SIMPLE;
+STATE on powered "Lamp is on" : SIMPLE;
+STATE final _ "powered off" : FINAL;
+
+#
+# Description of all the triggers
+#
+
+TRIGGER power_on "turn power on";
+TRIGGER push_switch "Push switch";
+TRIGGER power_off "turn power off";
+
+#
+# Description of all the actions
+#
+
+ACTION on "Turn lamp on" : ENTRY_ACTION;
+ACTION on "Turn lamp off" : EXIT_ACTION;
+ACTION off "Start off timer" : ENTRY_ACTION;
+ACTION t2 "reset off timer" : TRANSITION_ACTION;
+
+#
+# Description of all the transitions
+#
+
+TRANSITION t1 initial -> off power_on "";
+TRANSITION t2 off -> on push_switch "time off > 10s";
+TRANSITION t3 on -> off push_switch "";
+TRANSITION t4 powered -> final power_off "";
+

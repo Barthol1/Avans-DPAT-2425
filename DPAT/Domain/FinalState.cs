@@ -7,6 +7,8 @@ namespace DPAT.Domain
         public string Name { get; set; }
         public IState? Parent { get; set; }
         public string Identifier { get; set; }
+        public List<IState> Outgoing { get; set; } = [];
+        public List<IState> Incoming { get; set; } = [];
 
         public FinalState(string identifier, string name)
         {

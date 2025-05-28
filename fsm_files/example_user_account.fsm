@@ -1,0 +1,67 @@
+# User account
+# This file contains an example FSM for a user account featuring nested compound states
+
+#
+# Description of all the states
+#
+
+STATE initial _ "" : INITIAL;
+STATE created _ "Created" : COMPOUND;
+STATE inactive created "Inactive" : COMPOUND;
+STATE active created "Active" : COMPOUND;
+STATE unverified inactive "Unverified" : SIMPLE;
+STATE blocked inactive "Blocked" : SIMPLE;
+STATE deleted inactive "Deleted" : SIMPLE;
+STATE verified active "Verified" : SIMPLE;
+STATE logged_in active "Logged in" : SIMPLE;
+STATE final _ "Archived" : FINAL;
+
+#
+# Description of all the triggers
+#
+
+TRIGGER create "create";
+TRIGGER timer_elapsed "timer elapsed";
+TRIGGER email_verification "email verification";
+TRIGGER blocked_by_admin "blocked by admin";
+TRIGGER unblocked_by_admin "unblocked by admin";
+TRIGGER deleted_by_admin "deleted by admin";
+TRIGGER forget_me "forget me";
+TRIGGER login "login";
+TRIGGER logout "logout";
+TRIGGER archive "archive";
+
+#
+# Description of all the actions
+#
+
+ACTION unverified "send confirmation mail" : ENTRY_ACTION;
+ACTION unverified "start timer" : ENTRY_ACTION;
+ACTION unverified "stop timer" : EXIT_ACTION;
+ACTION blocked "notify user" : ENTRY_ACTION;
+ACTION active "logout" : EXIT_ACTION;
+ACTION verified "notify user" : ENTRY_ACTION;
+ACTION deleted "anonymize" : ENTRY_ACTION;
+ACTION logged_in "reset attempts" : ENTRY_ACTION;
+ACTION logged_in "log activity" : DO_ACTION;
+
+ACTION t2 "attempts = 0" : TRANSITION_ACTION;
+ACTION t3 "attempts++" : TRANSITION_ACTION;
+
+#
+# Description of all the transitions
+#
+
+TRANSITION t1 initial -> unverified create "";
+TRANSITION t2 unverified -> verified email_verification "";
+TRANSITION t3 verified -> verified login "invalid credentials";
+TRANSITION t4 verified -> logged_in login "valid credentials";
+TRANSITION t5 logged_in -> verified logout "";
+TRANSITION t6 logged_in -> deleted forget_me "valid credentials";
+TRANSITION t7 verified -> blocked "attempts >= 3";
+TRANSITION t8 active -> blocked blocked_by_admin "";
+TRANSITION t9 blocked -> verified unblocked_by_admin "";
+TRANSITION t10 blocked -> deleted deleted_by_admin "";
+TRANSITION t11 deleted -> final archive "";
+TRANSITION t12 unverified -> deleted timer_elapsed "";
+

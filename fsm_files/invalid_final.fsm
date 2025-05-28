@@ -1,0 +1,14 @@
+# 
+# The FSM in this file is invalid. Transitions from final states are not allowed
+
+STATE initial _ "" : INITIAL;
+STATE state1 _ "State1" : SIMPLE;
+STATE final _ "" : FINAL;
+
+TRIGGER block "block";
+TRIGGER reset "reset";
+
+TRANSITION t1 initial -> state1 "";
+TRANSITION t2 state1 -> final block "";
+TRANSITION t3 final -> state1 reset "";
+
