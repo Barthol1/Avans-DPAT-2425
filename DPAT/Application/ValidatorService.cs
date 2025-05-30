@@ -5,7 +5,7 @@ namespace DPAT.Application
 {
     public class ValidatorService
     {
-        private List<IFSMValidator> _validators = new List<IFSMValidator>();
+        private readonly List<IFSMValidator> _validators = [];
 
         public void AddValidator(IFSMValidator validator)
         {
