@@ -1,4 +1,5 @@
 ﻿using DPAT.Application;
+using DPAT.Domain;
 using DPAT.Infrastructure;
 
 namespace DPAT.Presentation
@@ -9,9 +10,8 @@ namespace DPAT.Presentation
         {
             string path = args.Length > 0 ? Path.GetFullPath(args[0]) : Path.Combine(Directory.GetCurrentDirectory(), "../fsm_files/example_lamp.fsm");
 
-            var parser = new FSMParser();
-
-            var fsm = parser.ParseFile(path);
+            var FSMDirector = new FSMDirector(new FSMBuilder());
+            FSM fsm = FSMDirector.BuildFromFile(path);
 
             var validatorService = new ValidatorService();
             validatorService.AddValidator(new DeterministicValidator());
@@ -23,7 +23,7 @@ namespace DPAT.Presentation
             var isValid = validatorService.Validate(fsm);
             Console.WriteLine(isValid);
 
-            IRenderer renderer = new ConsoleRenderer();
+            var renderer = new ConsoleRenderer();
             renderer.Render(fsm);
         }
     }

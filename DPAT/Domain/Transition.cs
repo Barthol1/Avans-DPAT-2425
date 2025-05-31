@@ -2,11 +2,16 @@ using DPAT.Domain.Interfaces;
 
 namespace DPAT.Domain
 {
-    public class Transition
+    public class Transition: IIdentifier, IDrawable
     {
-        public required string Id { get; set; }
         public required Tuple<IState, IState> Connection { get; set; }
         public string? Trigger { get; set; }
         public string? Guard { get; set; }
+        public required string Identifier { get; set; }
+
+        public void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

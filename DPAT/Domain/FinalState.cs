@@ -15,5 +15,10 @@ namespace DPAT.Domain
             Identifier = identifier;
             Name = name;
         }
+
+        public void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

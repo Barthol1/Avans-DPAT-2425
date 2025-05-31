@@ -6,46 +6,51 @@ namespace DPAT.Infrastructure
 {
     public class FSMBuilder : IFSMBuilder
     {
-        private readonly List<IState> _states = [];
-        private readonly List<Action> _actions = [];
-        private readonly List<Trigger> _triggers = [];
+        private FSM _fsm;
 
-        public void AddState(IState state)
+        public FSMBuilder()
         {
-            _states.Add(state);
+            this._fsm = new FSM() { 
+                Actions = new List<Action>(),
+                States = new List<IState>(),
+                Transitions = new List<Transition>(),
+                Triggers = new List<Trigger>()
+            };
         }
 
         public void AddAction(Action action)
         {
-            _actions.Add(action);
+            this._fsm.Actions.Add(action);
+        }
+
+        public void AddState(IState state)
+        {
+            this._fsm.States.Add(state);
+        }
+
+        public void AddTransition(Transition transition)
+        {
+            this._fsm.Transitions.Add(transition);
         }
 
         public void AddTrigger(Trigger trigger)
         {
-            _triggers.Add(trigger);
-        }
-
-        public void AddTransition(IState source, IState destination, string? triggerId = null, string? guard = null, string? effectActionId = null)
-        {
-            source.Outgoing.Add(destination);
-            destination.Incoming.Add(source);
+            this._fsm.Triggers.Add(trigger);
         }
 
         public FSM Build()
         {
-            return new FSM
-            {
-                States = _states,
-                Actions = _actions,
-                Triggers = _triggers
-            };
+            return this._fsm;
         }
 
         public void Reset()
         {
-            _states.Clear();
-            _actions.Clear();
-            _triggers.Clear();
+            this._fsm = new FSM() { 
+                Actions = new List<Action>(),
+                States = new List<IState>(),
+                Transitions = new List<Transition>(),
+                Triggers = new List<Trigger>()
+            };
         }
     }
 }
