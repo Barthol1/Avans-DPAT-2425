@@ -28,7 +28,7 @@ namespace DPAT.Infrastructure
         public FSM BuildFromFile(string filePath)
         {
             var lines = File.ReadAllLines(filePath);
-            var tempTransitions = new List<Transition>();
+            var parsedStates = new List<IState>();
 
             // First pass: collect all states
             foreach (var line in lines)
@@ -42,11 +42,9 @@ namespace DPAT.Infrastructure
 
                 if (trimmedLine.StartsWith("STATE"))
                 {
-                    _builder.AddState(_parser.GetState(trimmedLine));
-                }
-                else if (trimmedLine.StartsWith("TRANSITION"))
-                {
-                    tempTransitions.Add(_parser.GetTransition(trimmedLine));
+                    var state = _parser.GetState(trimmedLine);
+                    parsedStates.Add(state);
+                    _builder.AddState(state);
                 }
                 else if (trimmedLine.StartsWith("ACTION"))
                 {
@@ -58,29 +56,23 @@ namespace DPAT.Infrastructure
                 }
             }
 
-            // Second pass: link transitions to actual state objects
-            var fsm = _builder.Build();
-            var stateMap = fsm.States.ToDictionary(s => s.Identifier, s => s);
-
-            foreach (var tempTransition in tempTransitions)
+            // Second pass: parse transitions with access to the parsed states
+            foreach (var line in lines)
             {
-                var sourceState = stateMap.GetValueOrDefault(tempTransition.Connection.Item1.Identifier);
-                var targetState = stateMap.GetValueOrDefault(tempTransition.Connection.Item2.Identifier);
+                var trimmedLine = line.Trim();
 
-                if (sourceState != null && targetState != null)
+                if (string.IsNullOrWhiteSpace(trimmedLine) || line.StartsWith('#'))
                 {
-                    var linkedTransition = new Transition
-                    {
-                        Identifier = tempTransition.Identifier,
-                        Connection = new Tuple<IState, IState>(sourceState, targetState),
-                        Trigger = tempTransition.Trigger,
-                        Guard = tempTransition.Guard
-                    };
+                    continue;
+                }
 
-                    fsm.Transitions.Add(linkedTransition);
+                if (trimmedLine.StartsWith("TRANSITION"))
+                {
+                    _builder.AddTransition(_parser.GetTransition(trimmedLine, parsedStates));
                 }
             }
 
+            var fsm = _builder.Build();
             return fsm;
         }
     }

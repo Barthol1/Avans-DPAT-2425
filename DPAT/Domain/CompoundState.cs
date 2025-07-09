@@ -7,8 +7,6 @@ namespace DPAT.Domain
         public string Name { get; set; }
         public string Identifier { get; set; }
         public List<IState> SubStates { get; set; }
-        public List<IState> Outgoing { get; set; } = [];
-        public List<IState> Incoming { get; set; } = [];
 
         public CompoundState(string identifier, string name)
         {

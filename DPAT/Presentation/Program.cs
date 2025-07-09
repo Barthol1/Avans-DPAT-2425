@@ -20,8 +20,15 @@ namespace DPAT.Presentation
             validatorService.AddValidator(new InitialIngoingValidator());
             validatorService.AddValidator(new FinalStateOutgoingValidator());
 
-            var isValid = validatorService.Validate(fsm);
-            Console.WriteLine(isValid);
+            try
+            {
+                validatorService.Validate(fsm);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Validation failed: {ex.Message}");
+                return;
+            }
 
             var renderer = new ConsoleRenderer();
             renderer.Render(fsm);

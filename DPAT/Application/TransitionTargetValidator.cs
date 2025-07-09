@@ -5,17 +5,19 @@ namespace DPAT.Application
 {
     public class TransitionTargetValidator : IFSMValidator
     {
-        public bool Validate(FSM fsm)
+        public void Validate(FSM fsm)
         {
-            // check if there are any transitions that target a compound state instead of a simple state inside the compound state
-            foreach (var state in fsm.States)
+            foreach (var transition in fsm.Transitions)
             {
-                if (state.Outgoing.Any(o => o is CompoundState))
+                var targetState = transition.Connection.Item2;
+                if (targetState is CompoundState)
                 {
-                    return false;
+                    if (!((CompoundState)targetState).SubStates.Any(s => s is SimpleState))
+                    {
+                        throw new Exception($"Transition {transition.Identifier} targets a compound state without simple states: {targetState.Identifier}");
+                    }
                 }
             }
-            return true;
         }
     }
 }

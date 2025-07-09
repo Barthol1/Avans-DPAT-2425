@@ -32,7 +32,7 @@ namespace DPAT.Infrastructure
             return state;
         }
 
-        public Transition GetTransition(string line)
+        public Transition GetTransition(string line, IEnumerable<IState> states)
         {
             var transitionRegexPattern = $"^TRANSITION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s*->\\s*([a-zA-Z][a-zA-Z0-9_]*)" +
                                     $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +       // Optional trigger_identifier (Group 4)
@@ -51,10 +51,19 @@ namespace DPAT.Infrastructure
             var guard = match.Groups[5].Value;
             var effectActionId = match.Groups[6].Value;
 
-            // Note: In a real implementation, you would need to find the actual state objects
-            // This is simplified for the example
-            var source = new SimpleState(sourceId, "");
-            var destination = new SimpleState(destinationId, "");
+            // Find the actual state objects from the provided states collection
+            var source = states.FirstOrDefault(s => s.Identifier == sourceId);
+            var destination = states.FirstOrDefault(s => s.Identifier == destinationId);
+
+            if (source == null)
+            {
+                throw new Exception($"Source state '{sourceId}' not found");
+            }
+            if (destination == null)
+            {
+                throw new Exception($"Destination state '{destinationId}' not found");
+            }
+
             var transition = new Transition
             {
                 Connection = new Tuple<IState, IState>(source, destination),

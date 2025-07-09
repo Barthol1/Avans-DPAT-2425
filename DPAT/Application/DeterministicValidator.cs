@@ -5,9 +5,9 @@ namespace DPAT.Application
 {
     public class DeterministicValidator : IFSMValidator
     {
-        public bool Validate(FSM fsm)
+        public void Validate(FSM fsm)
         {
-            return true;
+            return;
         }
     }
 }

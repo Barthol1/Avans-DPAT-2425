@@ -12,17 +12,12 @@ namespace DPAT.Application
             _validators.Add(validator);
         }
 
-        public bool Validate(FSM fsm)
+        public void Validate(FSM fsm)
         {
             foreach (var validator in _validators)
             {
-                if (!validator.Validate(fsm))
-                {
-                    return false;
-                }
+                validator.Validate(fsm);
             }
-
-            return true;
         }
     }
 }

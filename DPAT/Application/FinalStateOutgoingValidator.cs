@@ -5,17 +5,15 @@ namespace DPAT.Application
 {
     public class FinalStateOutgoingValidator : IFSMValidator
     {
-        public bool Validate(FSM fsm)
+        public void Validate(FSM fsm)
         {
-            var finalStates = fsm.States.Where(s => s is FinalState).ToList();
-            foreach (var finalState in finalStates)
+            foreach (var transition in fsm.Transitions)
             {
-                if (finalState.Outgoing.Count > 0)
+                if (transition.Connection.Item1 is FinalState finalState && transition.Connection.Item2 is not null)
                 {
-                    return false;
+                    throw new InvalidOperationException($"Final state '{finalState.Name}' cannot have outgoing transitions to '{transition.Connection.Item2.Name}'.");
                 }
             }
-            return true;
         }
     }
 }

@@ -10,7 +10,8 @@ namespace DPAT.Infrastructure
 
         public FSMBuilder()
         {
-            this._fsm = new FSM() { 
+            this._fsm = new FSM()
+            {
                 Actions = new List<Action>(),
                 States = new List<IState>(),
                 Transitions = new List<Transition>(),
@@ -30,6 +31,8 @@ namespace DPAT.Infrastructure
 
         public void AddTransition(Transition transition)
         {
+            // _fsm.States.Find(s => s.Identifier == transition.Connection.Item1.Identifier)?.Outgoing.Add(transition.Connection.Item2);
+            // _fsm.States.Find(s => s.Identifier == transition.Connection.Item2.Identifier)?.Incoming.Add(transition.Connection.Item1);
             this._fsm.Transitions.Add(transition);
         }
 
@@ -45,7 +48,8 @@ namespace DPAT.Infrastructure
 
         public void Reset()
         {
-            this._fsm = new FSM() { 
+            this._fsm = new FSM()
+            {
                 Actions = new List<Action>(),
                 States = new List<IState>(),
                 Transitions = new List<Transition>(),
