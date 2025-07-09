@@ -31,8 +31,6 @@ namespace DPAT.Infrastructure
 
         public void AddTransition(Transition transition)
         {
-            // _fsm.States.Find(s => s.Identifier == transition.Connection.Item1.Identifier)?.Outgoing.Add(transition.Connection.Item2);
-            // _fsm.States.Find(s => s.Identifier == transition.Connection.Item2.Identifier)?.Incoming.Add(transition.Connection.Item1);
             this._fsm.Transitions.Add(transition);
         }
 
