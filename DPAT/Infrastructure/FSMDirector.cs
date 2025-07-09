@@ -28,7 +28,9 @@ namespace DPAT.Infrastructure
         public FSM BuildFromFile(string filePath)
         {
             var lines = File.ReadAllLines(filePath);
+            var tempTransitions = new List<Transition>();
 
+            // First pass: collect all states
             foreach (var line in lines)
             {
                 var trimmedLine = line.Trim();
@@ -44,7 +46,7 @@ namespace DPAT.Infrastructure
                 }
                 else if (trimmedLine.StartsWith("TRANSITION"))
                 {
-                    _builder.AddTransition(_parser.GetTransition(trimmedLine));
+                    tempTransitions.Add(_parser.GetTransition(trimmedLine));
                 }
                 else if (trimmedLine.StartsWith("ACTION"))
                 {
@@ -56,7 +58,30 @@ namespace DPAT.Infrastructure
                 }
             }
 
-            return _builder.Build();
+            // Second pass: link transitions to actual state objects
+            var fsm = _builder.Build();
+            var stateMap = fsm.States.ToDictionary(s => s.Identifier, s => s);
+
+            foreach (var tempTransition in tempTransitions)
+            {
+                var sourceState = stateMap.GetValueOrDefault(tempTransition.Connection.Item1.Identifier);
+                var targetState = stateMap.GetValueOrDefault(tempTransition.Connection.Item2.Identifier);
+
+                if (sourceState != null && targetState != null)
+                {
+                    var linkedTransition = new Transition
+                    {
+                        Identifier = tempTransition.Identifier,
+                        Connection = new Tuple<IState, IState>(sourceState, targetState),
+                        Trigger = tempTransition.Trigger,
+                        Guard = tempTransition.Guard
+                    };
+
+                    fsm.Transitions.Add(linkedTransition);
+                }
+            }
+
+            return fsm;
         }
     }
 }

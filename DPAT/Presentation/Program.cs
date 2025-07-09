@@ -8,7 +8,7 @@ namespace DPAT.Presentation
     {
         public static void Main(string[] args)
         {
-            string path = args.Length > 0 ? Path.GetFullPath(args[0]) : Path.Combine(Directory.GetCurrentDirectory(), "../fsm_files/example_lamp.fsm");
+            string path = args.Length > 0 ? Path.GetFullPath(args[0]) : Path.Combine(Directory.GetCurrentDirectory(), "../fsm_files/invalid_compound.fsm");
 
             var FSMDirector = new FSMDirector(new FSMBuilder());
             FSM fsm = FSMDirector.BuildFromFile(path);

@@ -17,7 +17,6 @@ namespace DPAT.Infrastructure
             }
 
             var identifier = match.Groups[1].Value;
-            var parentId = match.Groups[2].Value;
             var name = match.Groups[3].Value;
             var type = match.Groups[4].Value;
 
@@ -56,7 +55,7 @@ namespace DPAT.Infrastructure
             // This is simplified for the example
             var source = new SimpleState(sourceId, "");
             var destination = new SimpleState(destinationId, "");
-            var transition  = new Transition
+            var transition = new Transition
             {
                 Connection = new Tuple<IState, IState>(source, destination),
                 Identifier = match.Groups[1].Value,
