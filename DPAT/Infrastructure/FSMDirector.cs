@@ -35,7 +35,7 @@ namespace DPAT.Infrastructure
             {
                 var trimmedLine = line.Trim();
 
-                if (string.IsNullOrWhiteSpace(trimmedLine) || line.StartsWith('#'))
+                if (string.IsNullOrWhiteSpace(trimmedLine) || trimmedLine.StartsWith('#'))
                 {
                     continue;
                 }
@@ -56,12 +56,33 @@ namespace DPAT.Infrastructure
                 }
             }
 
+            // Second pass 1.5: establish compound hierarchy based on parent identifiers in state lines
+            // The grammar uses: STATE <id> <parentId or _> "name" : <type>;
+            // We need to attach states whose parentId matches a compound state identifier
+            var idToState = parsedStates.ToDictionary(s => s.Identifier, s => s);
+            foreach (var line in lines)
+            {
+                var trimmedLine = line.Trim();
+                if (string.IsNullOrWhiteSpace(trimmedLine) || line.StartsWith('#')) continue;
+                if (trimmedLine.StartsWith("STATE"))
+                {
+                    var match = Regex.Match(trimmedLine, "^STATE\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*|_)\\s+\"([^\"]*)\"\\s*:\\s*(INITIAL|SIMPLE|COMPOUND|FINAL)\\s*;$");
+                    if (!match.Success) continue;
+                    var stateId = match.Groups[1].Value;
+                    var parentId = match.Groups[2].Value;
+                    if (parentId != "_" && idToState.TryGetValue(stateId, out var child) && idToState.TryGetValue(parentId, out var parent) && parent is CompoundState compound)
+                    {
+                        compound.SubStates.Add(child);
+                    }
+                }
+            }
+
             // Second pass: parse transitions with access to the parsed states
             foreach (var line in lines)
             {
                 var trimmedLine = line.Trim();
 
-                if (string.IsNullOrWhiteSpace(trimmedLine) || line.StartsWith('#'))
+                if (string.IsNullOrWhiteSpace(trimmedLine) || trimmedLine.StartsWith('#'))
                 {
                     continue;
                 }

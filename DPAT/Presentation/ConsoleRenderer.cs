@@ -7,138 +7,173 @@ namespace DPAT.Presentation
     {
         public void Render(FSM fsm)
         {
+            RenderAsciiDiagram(fsm);
+        }
+
+        private void RenderAsciiDiagram(FSM fsm)
+        {
+            var stateMap = fsm.States.ToDictionary(s => s.Identifier, s => s);
+            var triggerMap = fsm.Triggers.ToDictionary(t => t.Identifier, t => t.Description);
+
+            var initial = fsm.States.OfType<InitialState>().FirstOrDefault();
+            var final = fsm.States.OfType<FinalState>().FirstOrDefault();
+
             Console.WriteLine("FSM Visualization:");
-            Console.WriteLine("==================");
+            Console.WriteLine("####################################################################");
+            Console.WriteLine("# Diagram: FSM");
+            Console.WriteLine("####################################################################");
             Console.WriteLine();
 
-            RenderStateMachine(fsm);
-        }
-
-        private void RenderStateMachine(FSM fsm)
-        {
-            // Create a mapping of state identifiers to actual state objects
-            var stateMap = fsm.States.ToDictionary(s => s.Identifier, s => s);
-
-            // Find initial state
-            var initialState = fsm.States.OfType<InitialState>().FirstOrDefault();
-            var finalState = fsm.States.OfType<FinalState>().FirstOrDefault();
-            var compoundStates = fsm.States.OfType<CompoundState>().ToList();
-
-            // Render initial state
-            if (initialState != null)
+            if (initial != null)
             {
-                Console.WriteLine($"●─ Initial state ({initialState.Name})");
-                Console.WriteLine("   │");
-
-                // Find transition from initial state
-                var initialTransition = fsm.Transitions.FirstOrDefault(t => t.Connection.Item1.Identifier == initialState.Identifier);
-                if (initialTransition != null)
+                Console.WriteLine($"O Initial state ({initial.Name})");
+                var initTransitions = fsm.Transitions.Where(t => t.Connection.Item1.Identifier == initial.Identifier);
+                foreach (var t in initTransitions)
                 {
-                    RenderTransitionLabel(initialTransition);
-                    Console.WriteLine("   ↓");
+                    Console.WriteLine();
+                    Console.WriteLine($"---{GetTransitionText(t, fsm, triggerMap)}---> {stateMap[t.Connection.Item2.Identifier].Name}");
                 }
-                Console.WriteLine();
             }
 
-            // Render compound states and their sub-states
+            var compoundStates = fsm.States.OfType<CompoundState>().ToList();
+            var childIds = new HashSet<string>(compoundStates.SelectMany(c => c.SubStates.Select(s => s.Identifier)));
             foreach (var compound in compoundStates)
             {
-                RenderCompoundState(compound, fsm, stateMap);
+                if (childIds.Contains(compound.Identifier)) continue;
                 Console.WriteLine();
-            }
+                Console.WriteLine(new string('=', 74));
+                Console.WriteLine($"|| Compound state: {compound.Name}");
+                Console.WriteLine(new string('-', 74));
 
-            // Render final state
-            if (finalState != null)
-            {
-                Console.WriteLine($"◉─ Final state ({finalState.Name})");
+                RenderCompoundContents(fsm, compound, stateMap, triggerMap, 1);
+
                 Console.WriteLine();
-            }
-
-            // Render transition summary
-            RenderTransitionSummary(fsm, stateMap);
-        }
-
-        private void RenderCompoundState(CompoundState compound, FSM fsm, Dictionary<string, IState> stateMap)
-        {
-            Console.WriteLine($"╔═══════════════════════════════════════════════════════════════════════════════════╗");
-            Console.WriteLine($"║ Compound state: {compound.Name.PadRight(64)} ║");
-            Console.WriteLine($"║                                                                                   ║");
-
-            // Render sub-states
-            var subStates = compound.SubStates.ToList();
-            if (subStates.Any())
-            {
-                Console.WriteLine($"║   Sub-states:                                                                     ║");
-                foreach (var subState in subStates)
+                var outgoing = fsm.Transitions.Where(t => t.Connection.Item1.Identifier == compound.Identifier);
+                foreach (var t in outgoing)
                 {
-                    Console.WriteLine($"║     ○ {subState.Name.PadRight(70)} ║");
+                    var to = stateMap[t.Connection.Item2.Identifier];
+                    var toLabel = to is FinalState ? $"Final state ({to.Name})" : to.Name;
+                    Console.WriteLine($"---{GetTransitionText(t, fsm, triggerMap)}---> {toLabel}");
                 }
-                Console.WriteLine($"║                                                                                   ║");
 
-                // Render internal transitions
-                var internalTransitions = fsm.Transitions.Where(t =>
-                    subStates.Any(s => s.Identifier == t.Connection.Item1.Identifier) &&
-                    subStates.Any(s => s.Identifier == t.Connection.Item2.Identifier)).ToList();
-
-                if (internalTransitions.Any())
-                {
-                    Console.WriteLine($"║   Internal transitions:                                                           ║");
-                    foreach (var transition in internalTransitions)
-                    {
-                        var fromState = stateMap.GetValueOrDefault(transition.Connection.Item1.Identifier);
-                        var toState = stateMap.GetValueOrDefault(transition.Connection.Item2.Identifier);
-                        var transitionLabel = GetTransitionLabel(transition);
-
-                        if (fromState != null && toState != null)
-                        {
-                            var line = $"║     {fromState.Name} → {toState.Name} {transitionLabel}";
-                            Console.WriteLine(line.PadRight(82) + "║");
-                        }
-                    }
-                    Console.WriteLine($"║                                                                                   ║");
-                }
+                Console.WriteLine();
+                Console.WriteLine(new string('=', 74));
             }
 
-            Console.WriteLine($"╚═══════════════════════════════════════════════════════════════════════════════════╝");
-
-            // Find outgoing transitions from compound state
-            var outgoingTransitions = fsm.Transitions.Where(t => t.Connection.Item1.Identifier == compound.Identifier).ToList();
-            foreach (var transition in outgoingTransitions)
+            if (final != null)
             {
-                Console.WriteLine("   │");
-                RenderTransitionLabel(transition);
-                Console.WriteLine("   ↓");
+                Console.WriteLine();
+                Console.WriteLine($"O Final state ({final.Name})");
             }
-        }
 
-        private void RenderTransitionLabel(Transition transition)
-        {
-            var label = GetTransitionLabel(transition);
-            Console.WriteLine($"   │ {label}");
-        }
-
-        private string GetTransitionLabel(Transition transition)
-        {
-            var triggerLabel = !string.IsNullOrEmpty(transition.Trigger) ? transition.Trigger : "";
-            var guardLabel = !string.IsNullOrEmpty(transition.Guard) ? $" [{transition.Guard}]" : "";
-            return $"{triggerLabel}{guardLabel}";
-        }
-
-        private void RenderTransitionSummary(FSM fsm, Dictionary<string, IState> stateMap)
-        {
+            Console.WriteLine();
             Console.WriteLine("Transition Summary:");
-            Console.WriteLine("-------------------");
+            Console.WriteLine("####################################################################");
             foreach (var transition in fsm.Transitions)
             {
-                var fromState = stateMap.GetValueOrDefault(transition.Connection.Item1.Identifier);
-                var toState = stateMap.GetValueOrDefault(transition.Connection.Item2.Identifier);
-                var label = GetTransitionLabel(transition);
+                var fromState = stateMap[transition.Connection.Item1.Identifier];
+                var toState = stateMap[transition.Connection.Item2.Identifier];
+                var trigger = !string.IsNullOrEmpty(transition.Trigger) && triggerMap.TryGetValue(transition.Trigger!, out var desc)
+                    ? desc
+                    : (transition.Trigger ?? "");
+                var guard = !string.IsNullOrEmpty(transition.Guard) ? $"[{transition.Guard}]" : "";
+                var effect = GetEffectDescription(transition, fsm);
+                var effectSuffix = string.IsNullOrEmpty(effect) ? string.Empty : $" / {effect}";
+                var pieces = new[] { trigger, guard }.Where(p => !string.IsNullOrEmpty(p));
+                var label = string.Join(' ', pieces);
+                var fullLabel = $"{label}{effectSuffix}".Trim();
 
-                var fromName = fromState?.Name ?? transition.Connection.Item1.Identifier;
-                var toName = toState?.Name ?? transition.Connection.Item2.Identifier;
-
-                Console.WriteLine($"• {fromName} → {toName} {label}");
+                Console.WriteLine($"# {fromState.Name} --{fullLabel}--> {toState.Name}");
             }
+            Console.WriteLine("####################################################################");
+        }
+
+        private void RenderCompoundContents(
+            FSM fsm,
+            CompoundState compound,
+            Dictionary<string, IState> stateMap,
+            Dictionary<string, string> triggerMap,
+            int depth)
+        {
+            var tab = new string('\t', depth);
+            var subStates = compound.SubStates.ToList();
+            foreach (var sub in subStates)
+            {
+                if (sub is CompoundState nested)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"{tab}{new string('-', 70)}");
+                    Console.WriteLine($"{tab}| Compound state: {nested.Name}");
+                    Console.WriteLine($"{tab}{new string('-', 70)}");
+                    RenderCompoundContents(fsm, nested, stateMap, triggerMap, depth + 1);
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"{tab}{new string('-', 70)}");
+                    Console.WriteLine($"{tab}| {sub.Name}");
+                    Console.WriteLine($"{tab}{new string('-', 70)}");
+                    foreach (var actionLine in GetStateActionsLines(sub, fsm))
+                    {
+                        Console.WriteLine($"{tab}| {actionLine}");
+                    }
+                    Console.WriteLine($"{tab}{new string('-', 70)}");
+
+                    var internalTransitions = fsm.Transitions.Where(t =>
+                             t.Connection.Item1.Identifier == sub.Identifier &&
+                             subStates.Any(s => s.Identifier == t.Connection.Item2.Identifier));
+                    foreach (var t in internalTransitions)
+                    {
+                        Console.WriteLine($"{tab}---{GetTransitionText(t, fsm, triggerMap)}---> {stateMap[t.Connection.Item2.Identifier].Name}");
+                    }
+                }
+            }
+        }
+
+        private string GetTransitionText(Transition transition, FSM fsm, Dictionary<string, string> triggerMap)
+        {
+            var trigger = !string.IsNullOrEmpty(transition.Trigger) && triggerMap.TryGetValue(transition.Trigger!, out var desc)
+                ? desc
+                : (transition.Trigger ?? "");
+            var guard = !string.IsNullOrEmpty(transition.Guard) ? $"[{transition.Guard}]" : "";
+            var effect = GetEffectDescription(transition, fsm);
+            var effectSuffix = string.IsNullOrEmpty(effect) ? string.Empty : $" / {effect}";
+            var pieces = new[] { trigger, guard }.Where(p => !string.IsNullOrEmpty(p));
+            var label = string.Join(' ', pieces);
+            return $"{label}{effectSuffix}".Trim();
+        }
+
+        private string GetEffectDescription(Transition transition, FSM fsm)
+        {
+            if (!string.IsNullOrEmpty(transition.EffectActionIdentifier))
+            {
+                var a = fsm.Actions.FirstOrDefault(a => a.Identifier == transition.EffectActionIdentifier && a.Type == ActionType.TRANSITION_ACTION);
+                if (a != null) return a.Description;
+                return transition.EffectActionIdentifier!;
+            }
+
+            var effect = fsm.Actions.FirstOrDefault(a => a.Identifier == transition.Identifier && a.Type == ActionType.TRANSITION_ACTION);
+            return effect?.Description ?? string.Empty;
+        }
+
+        private IEnumerable<string> GetStateActionsLines(IState state, FSM fsm)
+        {
+            var actions = fsm.Actions.Where(a => a.Identifier == state.Identifier).ToList();
+            var lines = new List<string>();
+            foreach (var a in actions.Where(a => a.Type == ActionType.ENTRY_ACTION))
+            {
+                lines.Add($"On Entry / {a.Description}");
+            }
+            foreach (var a in actions.Where(a => a.Type == ActionType.DO_ACTION))
+            {
+                lines.Add($"On Do / {a.Description}");
+            }
+            foreach (var a in actions.Where(a => a.Type == ActionType.EXIT_ACTION))
+            {
+                lines.Add($"On Exit / {a.Description}");
+            }
+            return lines;
         }
     }
 }

@@ -7,16 +7,17 @@ namespace DPAT.Application
     {
         public void Validate(FSM fsm)
         {
-            var initialState = fsm.States.Where(s => s is InitialState).FirstOrDefault();
-            if (initialState == null)
+            var initialStates = fsm.States.OfType<InitialState>().ToList();
+            if (initialStates.Count != 1)
             {
                 throw new Exception("FSM must have exactly one initial state.");
             }
+            var initialState = initialStates.Single();
             foreach (var transition in fsm.Transitions)
             {
                 if (transition.Connection.Item2 is InitialState)
                 {
-                    throw new InvalidOperationException($"Initial state '{initialState.Name}' cannot have incoming transitions from '{transition.Connection.Item1.Name}'.");
+                    throw new InvalidOperationException($"Initial state '{initialState.Name}' cannot have incoming transitions.");
                 }
             }
         }

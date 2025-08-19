@@ -7,7 +7,81 @@ namespace DPAT.Application
     {
         public void Validate(FSM fsm)
         {
-            return;
+            var initial = fsm.States.OfType<InitialState>().FirstOrDefault();
+            if (initial == null)
+            {
+                throw new Exception("FSM must have exactly one initial state.");
+            }
+
+            // Build child->parent mapping (for all nested compounds)
+            var childToParent = BuildChildToParentMap(fsm);
+
+            var visited = new HashSet<string>();
+            var queue = new Queue<IState>();
+
+            void VisitAndPropagateParents(IState state)
+            {
+                if (!visited.Add(state.Identifier)) return;
+                // Mark all parents (transitively) as visited as well
+                var currentId = state.Identifier;
+                while (childToParent.TryGetValue(currentId, out var parent))
+                {
+                    if (!visited.Add(parent.Identifier)) break;
+                    // Enqueue the parent so its outgoing transitions are also considered
+                    queue.Enqueue(parent);
+                    currentId = parent.Identifier;
+                }
+                queue.Enqueue(state);
+            }
+
+            VisitAndPropagateParents(initial);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                var outgoing = fsm.Transitions.Where(t => t.Connection.Item1.Identifier == current.Identifier)
+                                              .Select(t => t.Connection.Item2)
+                                              .ToList();
+                foreach (var next in outgoing)
+                {
+                    VisitAndPropagateParents(next);
+                }
+            }
+
+            var unreachable = fsm.States
+                .Where(s => s is not InitialState && !visited.Contains(s.Identifier))
+                // Ignore unreachable sub-states that live inside a compound; only flag top-level states
+                .Where(s => !childToParent.ContainsKey(s.Identifier))
+                .ToList();
+            if (unreachable.Any())
+            {
+                var names = string.Join(", ", unreachable.Select(s => s.Name));
+                throw new InvalidOperationException($"Unreachable state(s): {names}");
+            }
+        }
+
+        private static Dictionary<string, CompoundState> BuildChildToParentMap(FSM fsm)
+        {
+            var map = new Dictionary<string, CompoundState>();
+
+            void Recurse(CompoundState compound)
+            {
+                foreach (var child in compound.SubStates)
+                {
+                    map[child.Identifier] = compound;
+                    if (child is CompoundState nested)
+                    {
+                        Recurse(nested);
+                    }
+                }
+            }
+
+            foreach (var rootCompound in fsm.States.OfType<CompoundState>())
+            {
+                Recurse(rootCompound);
+            }
+
+            return map;
         }
     }
 }

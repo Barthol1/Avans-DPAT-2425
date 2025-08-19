@@ -9,9 +9,9 @@ namespace DPAT.Application
         {
             foreach (var transition in fsm.Transitions)
             {
-                if (transition.Connection.Item1 is FinalState finalState && transition.Connection.Item2 is not null)
+                if (transition.Connection.Item1 is FinalState finalState)
                 {
-                    throw new InvalidOperationException($"Final state '{finalState.Name}' cannot have outgoing transitions to '{transition.Connection.Item2.Name}'.");
+                    throw new InvalidOperationException($"Final state '{finalState.Name}' cannot have outgoing transitions.");
                 }
             }
         }

@@ -12,10 +12,7 @@ namespace DPAT.Application
                 var targetState = transition.Connection.Item2;
                 if (targetState is CompoundState)
                 {
-                    if (!((CompoundState)targetState).SubStates.Any(s => s is SimpleState))
-                    {
-                        throw new Exception($"Transition {transition.Identifier} targets a compound state without simple states: {targetState.Identifier}");
-                    }
+                    throw new InvalidOperationException($"Transition {transition.Identifier} targets a compound state '{targetState.Identifier}' instead of one of its children.");
                 }
             }
         }

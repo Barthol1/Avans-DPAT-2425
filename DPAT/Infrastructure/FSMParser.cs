@@ -7,6 +7,13 @@ namespace DPAT.Infrastructure
 {
     public class FSMParser
     {
+        private readonly IStateFactory _stateFactory;
+
+        public FSMParser(IStateFactory? stateFactory = null)
+        {
+            _stateFactory = stateFactory ?? new SimpleStateFactory();
+        }
+
         public IState GetState(string line)
         {
             var stateRegex = $"^STATE\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*|_)\\s+\"([^\"]*)\"\\s*:\\s*(INITIAL|SIMPLE|COMPOUND|FINAL)\\s*;$";
@@ -20,14 +27,7 @@ namespace DPAT.Infrastructure
             var name = match.Groups[3].Value;
             var type = match.Groups[4].Value;
 
-            IState state = type switch
-            {
-                "INITIAL" => new InitialState(identifier, name),
-                "SIMPLE" => new SimpleState(identifier, name),
-                "COMPOUND" => new CompoundState(identifier, name),
-                "FINAL" => new FinalState(identifier, name),
-                _ => throw new Exception("Invalid state type")
-            };
+            IState state = _stateFactory.Create(type, identifier, name);
 
             return state;
         }
@@ -35,9 +35,9 @@ namespace DPAT.Infrastructure
         public Transition GetTransition(string line, IEnumerable<IState> states)
         {
             var transitionRegexPattern = $"^TRANSITION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s*->\\s*([a-zA-Z][a-zA-Z0-9_]*)" +
-                                    $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +       // Optional trigger_identifier (Group 4)
-                                    $"\\s*\"([^\"]*)\"" +                      // Guard condition (Group 5) - always quotes, content can be empty
-                                    $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +       // Optional effect_action_identifier (Group 6)
+                                    $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +
+                                    $"(?:\\s*\"([^\"]*)\")?" +
+                                    $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +
                                     $"\\s*;$";
             var match = Regex.Match(line, transitionRegexPattern);
             if (!match.Success)
@@ -69,7 +69,8 @@ namespace DPAT.Infrastructure
                 Connection = new Tuple<IState, IState>(source, destination),
                 Identifier = match.Groups[1].Value,
                 Trigger = string.IsNullOrEmpty(triggerId) ? null : triggerId,
-                Guard = string.IsNullOrEmpty(guard) ? null : guard
+                Guard = string.IsNullOrEmpty(guard) ? null : guard,
+                EffectActionIdentifier = string.IsNullOrEmpty(effectActionId) ? null : effectActionId
             };
 
             return transition;
