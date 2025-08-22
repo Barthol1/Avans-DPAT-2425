@@ -90,6 +90,15 @@ namespace DPAT.Tests
         }
 
         [Fact]
+        public void Invalid_NonDeterministic_AutomaticTransition_Throws()
+        {
+            var fsm = Parse("invalid_deterministic3.fsm");
+            var service = new ValidatorService();
+            service.AddValidator(new DeterministicValidator());
+            Assert.Throws<InvalidOperationException>(() => service.Validate(fsm));
+        }
+
+        [Fact]
         public void Valid_Deterministic_Passes()
         {
             var fsm = Parse("valid_deterministic.fsm");
@@ -105,6 +114,13 @@ namespace DPAT.Tests
             var service = new ValidatorService();
             service.AddValidator(new UnreachableStateValidator());
             Assert.Throws<InvalidOperationException>(() => service.Validate(fsm));
+        }
+
+        [Fact]
+        public void ParsesAndValidates_LampExample_Passes()
+        {
+            var fsm = Parse("example_lamp.fsm");
+            ValidateAll(fsm);
         }
     }
 }

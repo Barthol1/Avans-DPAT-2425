@@ -8,8 +8,14 @@ namespace DPAT.Presentation
     {
         public static void Main(string[] args)
         {
-            var pathArg = args.Length > 0 ? args[0] : Path.Combine(Directory.GetCurrentDirectory(), "../fsm_files/example_lamp.fsm");
-            var path = Path.GetFullPath(pathArg);
+            if (args.Length == 0)
+            {
+                Console.Error.WriteLine("Usage: DPAT <path-to-fsm-file>");
+                Environment.Exit(1);
+                return;
+            }
+
+            var path = Path.GetFullPath(args[0]);
 
             var director = new FSMDirector(new FSMBuilder());
             FSM fsm = director.BuildFromFile(path);

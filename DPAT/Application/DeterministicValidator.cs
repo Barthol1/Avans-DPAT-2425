@@ -11,6 +11,15 @@ namespace DPAT.Application
             foreach (var group in groupedBySource)
             {
                 var transitions = group.ToList();
+
+                var automaticTransitions = transitions.Where(t => string.IsNullOrEmpty(t.Trigger)).ToList();
+                var hasUnguardedAutomatic = automaticTransitions.Any(t => string.IsNullOrWhiteSpace(t.Guard));
+                if (hasUnguardedAutomatic && transitions.Count > 1)
+                {
+                    var stateName = transitions.First().Connection.Item1.Name;
+                    throw new InvalidOperationException($"Nondeterministic outgoing transitions from state '{stateName}' due to an unguarded automatic transition coexisting with other transitions.");
+                }
+
                 for (int i = 0; i < transitions.Count; i++)
                 {
                     for (int j = i + 1; j < transitions.Count; j++)
