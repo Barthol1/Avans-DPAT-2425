@@ -2,7 +2,7 @@ using DPAT.Domain.Interfaces;
 
 namespace DPAT.Domain
 {
-    class InitialState : IState
+    public class InitialState : IState
     {
         public string Name { get; set; }
         public string Identifier { get; set; }

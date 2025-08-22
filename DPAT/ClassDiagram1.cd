@@ -1,174 +1,226 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="DPAT.Application.DeterministicValidator" BaseTypeListCollapsed="true">
-    <Position X="6.75" Y="1.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Application\DeterministicValidator.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="DPAT.Application.FinalStateOutgoingValidator" BaseTypeListCollapsed="true">
-    <Position X="10.25" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Application\FinalStateOutgoingValidator.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="DPAT.Application.InitialIngoingValidator" BaseTypeListCollapsed="true">
-    <Position X="6.75" Y="3.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Application\InitialIngoingValidator.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="DPAT.Application.TransitionTargetValidator" BaseTypeListCollapsed="true">
-    <Position X="8.5" Y="3" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Application\TransitionTargetValidator.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="DPAT.Application.UnreachableStateValidator" BaseTypeListCollapsed="true">
-    <Position X="3.25" Y="4.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Application\UnreachableStateValidator.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="DPAT.Application.ValidatorService">
-    <Position X="5" Y="5.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAEAAAAAAAAAAAAQAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Application\ValidatorService.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="DPAT.Domain.Action">
-    <Position X="3.25" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAQAAQAAAAAA=</HashCode>
-      <FileName>Domain\Action.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="DPAT.Domain.CompoundState" BaseTypeListCollapsed="true">
-    <Position X="5" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAAAAAAQAQAQAAgQAAAAAAAQAAAAAA=</HashCode>
-      <FileName>Domain\CompoundState.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="DPAT.Domain.FinalState" BaseTypeListCollapsed="true">
-    <Position X="8.5" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAAAAAAQAQAAAAgQAAAAAAAQAAAAAA=</HashCode>
-      <FileName>Domain\FinalState.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Class Name="DPAT.Domain.FSM">
-    <Position X="3.25" Y="2.25" Width="1.5" />
+    <Position X="14.5" Y="3.5" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAIAAAAAAAAAAAAAAACAAAAAAAAAAADAAAAAA=</HashCode>
       <FileName>Domain\FSM.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="DPAT.Domain.InitialState" BaseTypeListCollapsed="true">
-    <Position X="8.5" Y="4.5" Width="1.5" />
+  <Class Name="DPAT.Domain.SimpleState">
+    <Position X="2" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAAAAAAQAQAAAAgQAAAAAAAQAAAAAA=</HashCode>
-      <FileName>Domain\InitialState.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="DPAT.Domain.SimpleState" BaseTypeListCollapsed="true">
-    <Position X="3.25" Y="5.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAAAAAAQAQAAAAgQAAAAAAAQAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAQAAAAAA=</HashCode>
       <FileName>Domain\SimpleState.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DPAT.Domain.InitialState">
+    <Position X="4.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Domain\InitialState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DPAT.Domain.FinalState">
+    <Position X="7" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Domain\FinalState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DPAT.Domain.CompoundState">
+    <Position X="9.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAQAQAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Domain\CompoundState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="DPAT.Domain.Transition">
-    <Position X="6.75" Y="4.5" Width="1.5" />
+    <Position X="12" Y="0.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAABEAAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <HashCode>AIAAAIAAAAAAABEAAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
       <FileName>Domain\Transition.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DPAT.Domain.Trigger">
-    <Position X="10.25" Y="3" Width="1.5" />
+    <Position X="15" Y="0.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AIAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
       <FileName>Domain\Trigger.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="DPAT.Infrastructure.FSMParser">
-    <Position X="7.25" Y="7.75" Width="1.5" />
+  <Class Name="DPAT.Domain.Action">
+    <Position X="17.5" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAEAAEABAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Infrastructure\FSMParser.cs</FileName>
+      <HashCode>AIAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAQAAQAAAAAA=</HashCode>
+      <FileName>Domain\Action.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
-  <Class Name="DPAT.Presentation.Program">
-    <Position X="10.25" Y="1.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
-      <FileName>Presentation\Program.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="DPAT.Infrastructure.FSMBuilder" BaseTypeListCollapsed="true">
-    <Position X="9.25" Y="7.75" Width="1.5" />
+  <Class Name="DPAT.Infrastructure.FSMBuilder">
+    <Position X="2" Y="6" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAABAAAAAAAAAAAAAAAggIEAAAAAAAgCAA=</HashCode>
       <FileName>Infrastructure\FSMBuilder.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="DPAT.Infrastructure.FSMDirector">
-    <Position X="11" Y="7.75" Width="1.5" />
+    <Position X="5" Y="6" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAEAAAIAAAAAAAAAEAgAAAAAAAAAAACAA=</HashCode>
       <FileName>Infrastructure\FSMDirector.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Interface Name="DPAT.Domain.Interfaces.IFSMValidator">
-    <Position X="5" Y="7.25" Width="1.5" />
+  <Class Name="DPAT.Infrastructure.FSMParser">
+    <Position X="8" Y="6" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAEAAEABAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Infrastructure\FSMParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DPAT.Infrastructure.SimpleStateFactory">
+    <Position X="11" Y="6" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Infrastructure\SimpleStateFactory.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DPAT.Application.ValidatorService">
+    <Position X="14" Y="6" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAEAAAAAAAAAAAAQAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Application\ValidatorService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DPAT.Application.DeterministicValidator">
+    <Position X="16.5" Y="6" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Application\DeterministicValidator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DPAT.Application.FinalStateOutgoingValidator">
+    <Position X="19" Y="6" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Domain\Interfaces\IFSMValidator.cs</FileName>
+      <FileName>Application\FinalStateOutgoingValidator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DPAT.Application.InitialIngoingValidator">
+    <Position X="21.5" Y="6" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Application\InitialIngoingValidator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DPAT.Application.TransitionTargetValidator">
+    <Position X="24" Y="6" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Application\TransitionTargetValidator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DPAT.Application.UnreachableStateValidator">
+    <Position X="26.5" Y="6" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Application\UnreachableStateValidator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DPAT.Presentation.ConsoleRenderer">
+    <Position X="5" Y="9.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAABAAAAAAAAA=</HashCode>
+      <FileName>Presentation\ConsoleRenderer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DPAT.Presentation.Visitor">
+    <Position X="7.5" Y="9.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAIAAQAASAIAAAQBAEAEAQFAAEAAAAAAEAAAA=</HashCode>
+      <FileName>Presentation\Visitor.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DPAT.Presentation.Program">
+    <Position X="10.5" Y="9.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Presentation\Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="DPAT.Domain.Interfaces.IState">
+    <Position X="6" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Domain\Interfaces\IState.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="DPAT.Domain.Interfaces.IIdentifier">
-    <Position X="0.75" Y="0.5" Width="1.5" />
+    <Position X="2" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
       <FileName>Domain\Interfaces\IIdentifier.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="DPAT.Domain.Interfaces.IState">
-    <Position X="0.75" Y="2.25" Width="1.5" />
+  <Interface Name="DPAT.Domain.Interfaces.IDrawable">
+    <Position X="4" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAQAQAAAAgQAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Domain\Interfaces\IState.cs</FileName>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Domain\Interfaces\IDrawable.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="DPAT.Infrastructure.IFSMBuilder" Collapsed="true">
-    <Position X="7.25" Y="10" Width="1.5" />
+  <Interface Name="DPAT.Domain.Interfaces.IVisitor">
+    <Position X="8" Y="3.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Domain\Interfaces\IVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DPAT.Domain.Interfaces.IFSMValidator">
+    <Position X="10.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Domain\Interfaces\IFSMValidator.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DPAT.Domain.Interfaces.IStateFactory">
+    <Position X="12.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Domain\Interfaces\IStateFactory.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DPAT.Infrastructure.IFSMBuilder">
+    <Position X="2" Y="9.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAABAAAAAAAAAAAAAAAggIAAAAAAAAgCAA=</HashCode>
       <FileName>Infrastructure\IFSMBuilder.cs</FileName>
     </TypeIdentifier>
   </Interface>
+  <Interface Name="DPAT.Presentation.IRenderer">
+    <Position X="5" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAA=</HashCode>
+      <FileName>Presentation\IRenderer.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
   <Enum Name="DPAT.Domain.ActionType">
-    <Position X="5" Y="8.5" Width="1.5" />
+    <Position X="20" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIABAgAAAAA=</HashCode>
       <FileName>Domain\ActionType.cs</FileName>
