@@ -82,7 +82,7 @@ namespace DPAT.Infrastructure
             var match = Regex.Match(line, actionRegex);
             if (!match.Success)
             {
-                throw new Exception("Invalid action line");
+                throw new NotSupportedException("Invalid action line");
             }
 
             var actionId = match.Groups[1].Value;
@@ -95,7 +95,7 @@ namespace DPAT.Infrastructure
                 "DO_ACTION" => ActionType.DO_ACTION,
                 "EXIT_ACTION" => ActionType.EXIT_ACTION,
                 "TRANSITION_ACTION" => ActionType.TRANSITION_ACTION,
-                _ => throw new Exception("Invalid action type")
+                _ => throw new NotSupportedException("Invalid action type")
             };
 
             Action action = new()
@@ -114,7 +114,7 @@ namespace DPAT.Infrastructure
             var match = Regex.Match(line, triggerRegex);
             if (!match.Success)
             {
-                throw new Exception("Invalid trigger line");
+                throw new NotSupportedException("Invalid trigger line");
             }
 
             var triggerId = match.Groups[1].Value;
