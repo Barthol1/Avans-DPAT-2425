@@ -179,10 +179,12 @@ namespace DPAT.Presentation
                 if (sub is CompoundState nested)
                 {
                     _outputLines.Add("");
-                    _outputLines.Add($"{indent}{new string('-', 70)}");
-                    _outputLines.Add($"{indent}| Compound state: {nested.Name}");
-                    _outputLines.Add($"{indent}{new string('-', 70)}");
+                    _outputLines.Add($"{indent}{new string('=', 70)}");
+                    _outputLines.Add($"{indent}|| Compound state: {nested.Name}");
+                    _outputLines.Add($"{indent}{new string('=', 70)}");
                     ProcessCompoundContents(nested, depth + 1);
+                    _outputLines.Add("");
+                    _outputLines.Add($"{indent}{new string('=', 70)}");
                     _outputLines.Add("");
                 }
                 else
