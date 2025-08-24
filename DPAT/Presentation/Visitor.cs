@@ -25,10 +25,8 @@ namespace DPAT.Presentation
 
         public IReadOnlyList<string> OutputLines => _outputLines.AsReadOnly();
 
-        // Visitor pattern implementation - these methods handle the double dispatch
         public void Visit(IState state)
         {
-            // This should not be called directly - use Accept() on the state instead
             throw new InvalidOperationException("Use Accept() method on state objects instead of calling Visit directly");
         }
 
@@ -59,13 +57,11 @@ namespace DPAT.Presentation
 
         public void Visit(Trigger trigger)
         {
-            // Triggers are processed as part of transitions
             _outputLines.Add($"Trigger: {trigger.Description}");
         }
 
         public void Visit(Action action)
         {
-            // Actions are processed as part of transitions or states
             _outputLines.Add($"Action: {action.Description} ({action.Type})");
         }
 
@@ -93,16 +89,13 @@ namespace DPAT.Presentation
 
         private void ProcessCompoundState(CompoundState state)
         {
-            // Add compound state header with double equals
             _outputLines.Add("");
             _outputLines.Add($"{new string('=', 70)}");
             _outputLines.Add($"|| Compound state: {state.Name}");
             _outputLines.Add($"{new string('=', 70)}");
             
-            // Process compound contents with proper indentation (start with depth 1 for sub-states)
             ProcessCompoundContents(state, 1);
             
-            // Add compound state footer
             _outputLines.Add("");
             _outputLines.Add($"{new string('=', 70)}");
 
@@ -172,7 +165,7 @@ namespace DPAT.Presentation
 
         private void ProcessCompoundContents(CompoundState compound, int depth)
         {
-            var indent = new string(' ', depth * 4); // Use 4 spaces for indentation
+            var indent = new string(' ', depth * 4);
             var subStates = compound.SubStates.ToList();
             foreach (var sub in subStates)
             {

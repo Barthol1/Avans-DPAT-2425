@@ -40,7 +40,6 @@ namespace DPAT.Presentation
                 final.Accept(visitor);
             }
 
-            // Print all the collected output lines
             foreach (var line in visitor.OutputLines)
             {
                 Console.WriteLine(line);
