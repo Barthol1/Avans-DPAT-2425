@@ -11,7 +11,6 @@ namespace DPAT.Tests
         [Fact]
         public void Visitor_Should_Implement_Double_Dispatch_Correctly()
         {
-            // Arrange
             var fsm = new FSM
             {
                 States = new List<IState>
@@ -30,7 +29,6 @@ namespace DPAT.Tests
             var simpleState = fsm.States.OfType<SimpleState>().First();
             var finalState = fsm.States.OfType<FinalState>().First();
 
-            // Act & Assert - These should not throw exceptions and should call the correct Visit method
             Assert.Null(Record.Exception(() => initialState.Accept(visitor)));
             Assert.Null(Record.Exception(() => simpleState.Accept(visitor)));
             Assert.Null(Record.Exception(() => finalState.Accept(visitor)));
@@ -39,7 +37,6 @@ namespace DPAT.Tests
         [Fact]
         public void Visitor_Should_Throw_When_Calling_Visit_IState_Directly()
         {
-            // Arrange
             var fsm = new FSM
             {
                 States = new List<IState>(),
@@ -51,20 +48,17 @@ namespace DPAT.Tests
             var visitor = new Visitor(fsm);
             var initialState = new InitialState("test", "Test");
 
-            // Act & Assert
             Assert.Throws<InvalidOperationException>(() => visitor.Visit((IState)initialState));
         }
 
         [Fact]
         public void State_Classes_Should_Have_Accept_Method()
         {
-            // Arrange
             var initialState = new InitialState("init", "Start");
             var simpleState = new SimpleState("simple", "Simple");
             var finalState = new FinalState("final", "End");
             var compoundState = new CompoundState("compound", "Compound");
 
-            // Act & Assert
             Assert.NotNull(initialState.GetType().GetMethod("Accept"));
             Assert.NotNull(simpleState.GetType().GetMethod("Accept"));
             Assert.NotNull(finalState.GetType().GetMethod("Accept"));
@@ -74,10 +68,8 @@ namespace DPAT.Tests
         [Fact]
         public void IDrawable_Interface_Should_Declare_Accept_Method()
         {
-            // Arrange & Act
             var acceptMethod = typeof(IDrawable).GetMethod("Accept");
 
-            // Assert
             Assert.NotNull(acceptMethod);
             Assert.Equal(typeof(IVisitor), acceptMethod.GetParameters()[0].ParameterType);
         }
