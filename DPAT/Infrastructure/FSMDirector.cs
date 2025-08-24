@@ -30,7 +30,7 @@ namespace DPAT.Infrastructure
             var lines = File.ReadAllLines(filePath);
             var parsedStates = new List<IState>();
 
-            // First pass: collect all states
+
             foreach (var line in lines)
             {
                 var trimmedLine = line.Trim();
@@ -56,9 +56,7 @@ namespace DPAT.Infrastructure
                 }
             }
 
-            // Second pass 1.5: establish compound hierarchy based on parent identifiers in state lines
-            // The grammar uses: STATE <id> <parentId or _> "name" : <type>;
-            // We need to attach states whose parentId matches a compound state identifier
+
             var idToState = parsedStates.ToDictionary(s => s.Identifier, s => s);
             foreach (var line in lines)
             {
@@ -77,7 +75,7 @@ namespace DPAT.Infrastructure
                 }
             }
 
-            // Second pass: parse transitions with access to the parsed states
+
             foreach (var line in lines)
             {
                 var trimmedLine = line.Trim();

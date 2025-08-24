@@ -51,7 +51,7 @@ namespace DPAT.Infrastructure
             var guard = match.Groups[5].Value;
             var effectActionId = match.Groups[6].Value;
 
-            // Find the actual state objects from the provided states collection
+
             var source = states.FirstOrDefault(s => s.Identifier == sourceId);
             var destination = states.FirstOrDefault(s => s.Identifier == destinationId);
 

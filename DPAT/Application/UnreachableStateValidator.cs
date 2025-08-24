@@ -13,7 +13,7 @@ namespace DPAT.Application
                 throw new Exception("FSM must have exactly one initial state.");
             }
 
-            // Build child->parent mapping (for all nested compounds)
+
             var childToParent = BuildChildToParentMap(fsm);
 
             var visited = new HashSet<string>();
@@ -22,12 +22,12 @@ namespace DPAT.Application
             void VisitAndPropagateParents(IState state)
             {
                 if (!visited.Add(state.Identifier)) return;
-                // Mark all parents (transitively) as visited as well
+
                 var currentId = state.Identifier;
                 while (childToParent.TryGetValue(currentId, out var parent))
                 {
                     if (!visited.Add(parent.Identifier)) break;
-                    // Enqueue the parent so its outgoing transitions are also considered
+
                     queue.Enqueue(parent);
                     currentId = parent.Identifier;
                 }
@@ -50,7 +50,7 @@ namespace DPAT.Application
 
             var unreachable = fsm.States
                 .Where(s => s is not InitialState && !visited.Contains(s.Identifier))
-                // Ignore unreachable sub-states that live inside a compound; only flag top-level states
+
                 .Where(s => !childToParent.ContainsKey(s.Identifier))
                 .ToList();
             if (unreachable.Any())
