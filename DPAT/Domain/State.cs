@@ -8,18 +8,17 @@ namespace DPAT.Domain
 
         public State(string name)
         {
-            Identifier = identifier;
             Name = name;
         }
 
-        public void print()
+        public void Print()
         {
-            //TODO implement print logic
+            throw new NotImplementedException();
         }
 
-        public void validate()
+        public void Validate()
         {
-            //TODO implement validation logic
+            throw new NotImplementedException();
         }
     }
 }
