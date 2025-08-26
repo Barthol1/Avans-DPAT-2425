@@ -2,15 +2,20 @@ using DPAT.Domain.Interfaces;
 
 namespace DPAT.Domain
 {
-    public class Action: IIdentifier,IDrawable
+    public class Action:  IFSMComponent
     {
         public required string Identifier { get; set; }
         public required string Description { get; set; }
         public required ActionType Type { get; set; }
-
-        public void Accept(IVisitor visitor)
+        
+        public void Print()
         {
-            visitor.Visit(this);
+            throw new NotImplementedException();
+        }
+
+        public void Validate()
+        {
+            throw new NotImplementedException();
         }
     }
 }
