@@ -4,16 +4,19 @@ namespace DPAT.Domain
 {
     public class State : IFSMComponent
     {
+        public string Identifier { get; set; }
         public string Name { get; set; }
+        public StateType Type { get; set; }
 
-        public State(string name)
+        public State(string identifier, string name, StateType type)
         {
+            Identifier = identifier;
             Name = name;
+            Type = type;
         }
-
         public void Print()
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"State: {Identifier} - {Name} - {Type}");
         }
 
         public void Validate()

@@ -1,8 +1,8 @@
 namespace DPAT.Domain.Interfaces
 {
-    public interface IStateFactory
+    public interface IFSMComponentFactory
     {
-        IState Create(string type, string identifier, string name);
+        IFSMComponent Create(string type, string identifier, string name);
     }
 }
 

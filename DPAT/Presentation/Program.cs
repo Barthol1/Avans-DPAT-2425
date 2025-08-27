@@ -1,5 +1,6 @@
 ﻿using DPAT.Application;
 using DPAT.Domain;
+using DPAT.Domain.Interfaces;
 using DPAT.Infrastructure;
 
 namespace DPAT.Presentation
@@ -14,17 +15,15 @@ namespace DPAT.Presentation
                 Environment.Exit(1);
                 return;
             }
-
             var path = Path.GetFullPath(args[0]);
-
             var director = new FSMDirector(new FSMBuilder());
-            FSM fsm = director.BuildFromFile(path);
-            RunValidation(fsm);
-            var renderer = new ConsoleRenderer();
-            renderer.Render(fsm);
+
+            IFSMComponent fsm = director.BuildFromFile(path);
+
+            fsm.Print();
         }
 
-        private static void RunValidation(FSM fsm)
+        private static void RunValidation(IFSMComponent fsm)
         {
             var validatorService = new ValidatorService();
             validatorService.AddValidator(new DeterministicValidator());

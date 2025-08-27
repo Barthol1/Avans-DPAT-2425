@@ -10,49 +10,37 @@ namespace DPAT.Infrastructure
 
         public FSMBuilder()
         {
-            this._fsm = new FSM()
-            {
-                Actions = new List<Action>(),
-                States = new List<IState>(),
-                Transitions = new List<Transition>(),
-                Triggers = new List<Trigger>()
-            };
+            _fsm = new FSM();
         }
 
         public void AddAction(Action action)
         {
-            this._fsm.Actions.Add(action);
+            _fsm.Add(action);
         }
 
-        public void AddState(IState state)
+        public void AddState(State state)
         {
-            this._fsm.States.Add(state);
+            _fsm.Add(state);
         }
 
         public void AddTransition(Transition transition)
         {
-            this._fsm.Transitions.Add(transition);
+            _fsm.Add(transition);
         }
 
         public void AddTrigger(Trigger trigger)
         {
-            this._fsm.Triggers.Add(trigger);
+            _fsm.Add(trigger);
         }
 
         public FSM Build()
         {
-            return this._fsm;
+            return _fsm;
         }
 
         public void Reset()
         {
-            this._fsm = new FSM()
-            {
-                Actions = new List<Action>(),
-                States = new List<IState>(),
-                Transitions = new List<Transition>(),
-                Triggers = new List<Trigger>()
-            };
+            _fsm = new FSM();
         }
     }
 }
