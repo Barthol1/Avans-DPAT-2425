@@ -21,11 +21,11 @@ namespace DPAT.Domain
             _components.Remove(component);
         }
 
-        public void Print()
+        public void Print(IVisitor visitor)
         {
             foreach (var component in _components)
             {
-                component.Print();
+                component.Print(visitor);
             }
         }
 

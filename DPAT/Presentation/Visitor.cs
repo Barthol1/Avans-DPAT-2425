@@ -7,26 +7,26 @@ using Action = DPAT.Domain.Action;
 
 namespace DPAT.Presentation
 {
-    public class Visitor : IVisitor
+    public class DrawConsoleVisitor : IVisitor
     {
-        public void Visit(State state)
+        public void Print(State state)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"State: {state.Identifier} - {state.Name} - {state.Type}");
         }
 
-        public void Visit(Transition transition)
+        public void Print(Transition transition)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"Transition: {transition.SourceState} -> {transition.TargetState} - {transition.Trigger} - {transition.Guard} - {transition.EffectActionIdentifier}");
         }
 
-        public void Visit(Trigger trigger)
+        public void Print(Trigger trigger)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"Trigger: {trigger.Identifier} - {trigger.Description}");
         }
 
-        public void Visit(Action action)
+        public void Print(Action action)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"Action: {action.Identifier} - {action.Description} - {action.Type}");
         }
     }
 }

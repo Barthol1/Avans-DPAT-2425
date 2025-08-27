@@ -7,9 +7,9 @@ namespace DPAT.Domain
         public required string Identifier { get; set; } = identifier;
         public required string Description { get; set; } = description;
 
-        public void Print()
+        public void Print(IVisitor visitor)
         {
-            Console.WriteLine($"Trigger: {Identifier} - {Description}");
+            visitor.Print(this);
         }
 
         public void Validate()

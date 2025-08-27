@@ -10,9 +10,9 @@ namespace DPAT.Domain
         public string? Guard { get; set; }
 
         public string? EffectActionIdentifier { get; set; }
-        public void Print()
+        public void Print(IVisitor visitor)
         {
-            Console.WriteLine($"Transition: {SourceState} -> {TargetState} - {Trigger} - {Guard} - {EffectActionIdentifier}");
+            visitor.Print(this);
         }
 
         public void Validate()

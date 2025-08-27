@@ -20,19 +20,19 @@ namespace DPAT.Presentation
 
             IFSMComponent fsm = director.BuildFromFile(path);
 
-            fsm.Print();
-        }
-
-        private static void RunValidation(IFSMComponent fsm)
-        {
             var validatorService = new ValidatorService();
             validatorService.AddValidator(new DeterministicValidator());
             validatorService.AddValidator(new UnreachableStateValidator());
             validatorService.AddValidator(new TransitionTargetValidator());
             validatorService.AddValidator(new InitialIngoingValidator());
             validatorService.AddValidator(new FinalStateOutgoingValidator());
-
             validatorService.Validate(fsm);
+
+            fsm.Print(new DrawConsoleVisitor());
         }
+
+
+
+
     }
 }

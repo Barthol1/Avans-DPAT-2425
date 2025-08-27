@@ -14,9 +14,9 @@ namespace DPAT.Domain
             Name = name;
             Type = type;
         }
-        public void Print()
+        public void Print(IVisitor visitor)
         {
-            Console.WriteLine($"State: {Identifier} - {Name} - {Type}");
+            visitor.Print(this);
         }
 
         public void Validate()

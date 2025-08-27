@@ -8,9 +8,9 @@ namespace DPAT.Domain
         public required string Description { get; set; }
         public required ActionType Type { get; set; }
 
-        public void Print()
+        public void Print(IVisitor visitor)
         {
-            Console.WriteLine($"Action: {Identifier} - {Description} - {Type}");
+            visitor.Print(this);
         }
 
         public void Validate()
