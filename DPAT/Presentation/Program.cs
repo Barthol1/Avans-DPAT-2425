@@ -20,13 +20,13 @@ namespace DPAT.Presentation
 
             IFSMComponent fsm = director.BuildFromFile(path);
 
-            var validatorService = new ValidatorService();
-            validatorService.AddValidator(new DeterministicValidator());
-            validatorService.AddValidator(new UnreachableStateValidator());
-            validatorService.AddValidator(new TransitionTargetValidator());
-            validatorService.AddValidator(new InitialIngoingValidator());
-            validatorService.AddValidator(new FinalStateOutgoingValidator());
-            validatorService.Validate(fsm);
+            // var validatorService = new ValidatorService();
+            // validatorService.AddValidator(new DeterministicValidator());
+            // validatorService.AddValidator(new UnreachableStateValidator());
+            // validatorService.AddValidator(new TransitionTargetValidator());
+            // validatorService.AddValidator(new InitialIngoingValidator());
+            // validatorService.AddValidator(new FinalStateOutgoingValidator());
+            // validatorService.Validate(fsm);
 
             fsm.Print(new DrawConsoleVisitor());
         }

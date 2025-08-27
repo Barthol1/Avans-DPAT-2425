@@ -4,7 +4,8 @@ namespace DPAT.Domain
 {
     public class FSM : IFSMComponent
     {
-        private List<IFSMComponent> _components;
+        private readonly List<IFSMComponent> _components;
+        public IEnumerable<IFSMComponent> Components => _components.AsReadOnly();
 
         public FSM()
         {
