@@ -113,6 +113,51 @@ namespace DPAT.Tests
             var fsm = Parse("example_lamp.fsm");
             ValidateAll(fsm);
         }
+
+        [Fact]
+        public void ParsesStateAndReturnsTuple()
+        {
+            var parser = new FSMParser();
+            var result = parser.ParseState("""STATE initial _ "powered off" : INITIAL;""");
+            Assert.Equal(typeof(ParsedState), result.GetType());
+            Assert.Equal("initial", result.Identifier);
+            Assert.Equal("powered off", result.Name);
+            Assert.Equal("INITIAL", result.Type.ToString());
+        }
+
+        [Fact]
+        public void ParsesTransitionAndReturnsTuple()
+        {
+            var parser = new FSMParser();
+            var result = parser.ParseTransition("""TRANSITION t1 initial -> off power_on "";""");
+            Assert.Equal(typeof(ParsedTransition), result.GetType());
+            Assert.Equal("t1", result.Identifier);
+            Assert.Equal("initial", result.SourceId);
+            Assert.Equal("off", result.TargetId);
+            Assert.Equal("power_on", result.TriggerName);
+            Assert.Equal("", result.GuardCondition);
+        }
+
+        [Fact]
+        public void ParsesTriggerAndReturnsTuple()
+        {
+            var parser = new FSMParser();
+            var result = parser.ParseTrigger("""TRIGGER power_on "turn power on";""");
+            Assert.Equal(typeof(ParsedTrigger), result.GetType());
+            Assert.Equal("power_on", result.Identifier);
+            Assert.Equal("turn power on", result.Description);
+        }
+
+        [Fact]
+        public void ParsesActionAndReturnsTuple()
+        {
+            var parser = new FSMParser();
+            var result = parser.ParseAction("""ACTION on "Turn lamp on" : ENTRY_ACTION;""");
+            Assert.Equal(typeof(ParsedAction), result.GetType());
+            Assert.Equal("on", result.Identifier);
+            Assert.Equal("Turn lamp on", result.Description);
+            Assert.Equal("ENTRY_ACTION", result.Type.ToString());
+        }
     }
 }
 
