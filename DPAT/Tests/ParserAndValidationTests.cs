@@ -28,9 +28,7 @@ namespace DPAT.Tests
         {
             var validatorService = new ValidatorService();
             validatorService.AddValidator(new DeterministicValidator());
-            // validatorService.AddValidator(new UnreachableStateValidator());
             validatorService.AddValidator(new TransitionTargetValidator());
-            // validatorService.AddValidator(new InitialIngoingValidator());
             validatorService.AddValidator(new FinalStateOutgoingValidator());
             validatorService.Validate(fsm);
         }
@@ -43,15 +41,6 @@ namespace DPAT.Tests
             service.AddValidator(new TransitionTargetValidator());
             Assert.Throws<InvalidOperationException>(() => service.Validate(fsm));
         }
-
-        // [Fact]
-        // public void Invalid_InitialIncoming_Throws()
-        // {
-        //     var fsm = Parse("invalid_initial.fsm");
-        //     var service = new ValidatorService();
-        //     service.AddValidator(new InitialIngoingValidator());
-        //     Assert.Throws<InvalidOperationException>(() => service.Validate(fsm));
-        // }
 
         [Fact]
         public void Invalid_FinalOutgoing_Throws()
@@ -98,15 +87,6 @@ namespace DPAT.Tests
             service.Validate(fsm);
         }
 
-        // [Fact]
-        // public void Invalid_Unreachable_Throws()
-        // {
-        //     var fsm = Parse("invalid_unreachable.fsm");
-        //     var service = new ValidatorService();
-        //     service.AddValidator(new UnreachableStateValidator());
-        //     Assert.Throws<InvalidOperationException>(() => service.Validate(fsm));
-        // }
-
         [Fact]
         public void ParsesAndValidates_LampExample_Passes()
         {
@@ -115,7 +95,7 @@ namespace DPAT.Tests
         }
 
         [Fact]
-        public void ParsesStateAndReturnsTuple()
+        public void ParsesStateAndReturnsRecord()
         {
             var parser = new FSMParser();
             var result = parser.ParseState("""STATE initial _ "powered off" : INITIAL;""");
@@ -126,7 +106,7 @@ namespace DPAT.Tests
         }
 
         [Fact]
-        public void ParsesTransitionAndReturnsTuple()
+        public void ParsesTransitionAndReturnsRecord()
         {
             var parser = new FSMParser();
             var result = parser.ParseTransition("""TRANSITION t1 initial -> off power_on "";""");
@@ -139,7 +119,7 @@ namespace DPAT.Tests
         }
 
         [Fact]
-        public void ParsesTriggerAndReturnsTuple()
+        public void ParsesTriggerAndReturnsRecord()
         {
             var parser = new FSMParser();
             var result = parser.ParseTrigger("""TRIGGER power_on "turn power on";""");
@@ -149,10 +129,15 @@ namespace DPAT.Tests
         }
 
         [Fact]
-        public void ParsesActionAndReturnsTuple()
+        public void ParsesActionAndReturnsRecord()
         {
+            // Arrange
             var parser = new FSMParser();
+
+            // Act
             var result = parser.ParseAction("""ACTION on "Turn lamp on" : ENTRY_ACTION;""");
+
+            // Assert 
             Assert.Equal(typeof(ParsedAction), result.GetType());
             Assert.Equal("on", result.Identifier);
             Assert.Equal("Turn lamp on", result.Description);

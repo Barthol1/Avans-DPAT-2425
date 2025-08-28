@@ -16,13 +16,16 @@ namespace DPAT.Presentation
 
             IFSMComponent fsm = director.Make(lines);
 
+            if (fsm is not FSM fsmComponent)
+            {
+                throw new InvalidOperationException("FSM component is not a valid FSM object");
+            }
+
             var validatorService = new ValidatorService();
             validatorService.AddValidator(new DeterministicValidator());
-            // validatorService.AddValidator(new UnreachableStateValidator());
             validatorService.AddValidator(new TransitionTargetValidator());
-            // validatorService.AddValidator(new InitialIngoingValidator());
             validatorService.AddValidator(new FinalStateOutgoingValidator());
-            validatorService.Validate((FSM)fsm);
+            validatorService.Validate(fsmComponent);
 
             var visitor = new DrawConsoleVisitor();
             fsm.Print(visitor);

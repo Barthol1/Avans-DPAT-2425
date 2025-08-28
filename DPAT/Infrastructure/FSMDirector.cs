@@ -25,7 +25,6 @@ namespace DPAT.Infrastructure
         {
             _builder.Reset();
 
-            // First pass: Parse and add all states, actions, and triggers
             foreach (string rawLine in lines)
             {
                 string line = rawLine.Trim();
@@ -33,7 +32,7 @@ namespace DPAT.Infrastructure
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
                     continue;
 
-                // Get first word of the line
+
                 var componentType = line.Split(' ')[0] switch
                 {
                     "STATE" => ComponentType.STATE,
@@ -60,7 +59,6 @@ namespace DPAT.Infrastructure
                 }
             }
 
-            // Second pass: Add transitions (requires states to be created first)
             foreach (string rawLine in lines)
             {
                 string line = rawLine.Trim();

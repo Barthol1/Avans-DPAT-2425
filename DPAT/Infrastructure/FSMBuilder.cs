@@ -17,8 +17,6 @@ namespace DPAT.Infrastructure
             _fsm = new FSM();
         }
 
-
-
         public void AddAction(ParsedAction parsedAction)
         {
             var action = new Action
@@ -70,7 +68,6 @@ namespace DPAT.Infrastructure
                 transition.Trigger = parsedTransition.TriggerName;
             }
 
-            // If there is a transition action defined with the same identifier, attach it
             if (_actions.TryGetValue(parsedTransition.Identifier, out var action) && action.Type == ActionType.TRANSITION_ACTION)
             {
                 transition.Action = action;

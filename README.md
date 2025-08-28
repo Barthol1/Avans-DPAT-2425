@@ -5,230 +5,182 @@
 | Bart Hol     | 2171763         |
 | Roel Leijser | 2168562         |
 
-## Rubric
-
-| Criteria        | Score     |
-| --------------- | --------- |
-| Creatiepatronen | Goed      |
-| Structuurpatronen | Goed |
-| Gedragspatronen | Goed |
-| Modulaire begrijpelijkheid Goede/consistente naamgevingen, code blocks doen slechts één ding. | Ruim voldoende |
-| Modulaire compositie/decompositie Code blocks zijn onafhankelijk en herbruikbaar. | Goed |
-| Kwaliteit - Code smells | Goed |
-| Kwaliteit - Testing | Goed |
-| Nice-to-have | NVT |
-
-
-## Main Class Diagram
+## Application Architecture
 
 ```mermaid
 classDiagram
-direction LR
-	class IIdentifier {
-		+String Identifier
-	}
-	class IDrawable {
-		+Accept(IVisitor visitor) void
-	}
-	class IState {
-		+String Name
-	}
-	class IVisitor {
-		+Visit(IState state) void
-		+Visit(Transition transition) void
-		+Visit(Trigger trigger) void
-		+Visit(Action action) void
-	}
-	class IFSMBuilder {
-		+AddState(IState state) void
-		+AddAction(Action action) void
-		+AddTrigger(Trigger trigger) void
-		+AddTransition(Transition transition) void
-		+FSM Build()
-		+Reset() void
-	}
-	class IStateFactory {
-		+Create(String type, String identifier, String name) IState
-	}
-	class IFSMValidator {
-		+Validate(FSM fsm) void
-	}
-	class IRenderer {
-		+Render(FSM fsm) void
-	}
-	class ActionType {
-		ENTRY_ACTION
-		DO_ACTION
-		EXIT_ACTION
-		TRANSITION_ACTION
-	}
-	class FSM {
-		+List~IState~ States
-		+List~Action~ Actions
-		+List~Trigger~ Triggers
-		+List~Transition~ Transitions
-	}
-	class Action {
-		+String Identifier
-		+String Description
-		+ActionType Type
-		+Accept(IVisitor visitor) void
-	}
-	class Trigger {
-		+String Identifier
-		+String Description
-		+Accept(IVisitor visitor) void
-	}
-	class Transition {
-		+Tuple~IState,IState~ Connection
-		+String Trigger
-		+String Guard
-		+String EffectActionIdentifier
-		+String Identifier
-		+Accept(IVisitor visitor) void
-	}
-	class InitialState {
-		+String Name
-		+String Identifier
-		+Accept(IVisitor visitor) void
-	}
-	class SimpleState {
-		+String Name
-		+String Identifier
-		+Accept(IVisitor visitor) void
-	}
-	class CompoundState {
-		+String Name
-		+String Identifier
-		+List~IState~ SubStates
-		+Accept(IVisitor visitor) void
-	}
-	class FinalState {
-		+String Name
-		+String Identifier
-		+Accept(IVisitor visitor) void
-	}
-	class FSMBuilder {
-		-FSM _fsm
-		+AddState(IState state) void
-		+AddAction(Action action) void
-		+AddTrigger(Trigger trigger) void
-		+AddTransition(Transition transition) void
-		+FSM Build()
-		+Reset() void
-	}
-	class FSMDirector {
-		-IFSMBuilder _builder
-		-FSMParser _parser
-		+ChangeBuilder(IFSMBuilder builder) void
-		+FSM Build()
-		+FSM BuildFromFile(String filePath)
-	}
-	class FSMParser {
-		+IState GetState(String line)
-		+Transition GetTransition(String line, IEnumerable~IState~ states)
-		+Action GetAction(String line)
-		+Trigger GetTrigger(String line)
-	}
-	class ValidatorService {
-		-List~IFSMValidator~ _validators
-		+AddValidator(IFSMValidator validator) void
-		+Validate(FSM fsm) void
-	}
-	class DeterministicValidator {
-		+Validate(FSM fsm) void
-	}
-	class FinalStateOutgoingValidator {
-		+Validate(FSM fsm) void
-	}
-	class InitialIngoingValidator {
-		+Validate(FSM fsm) void
-	}
-	class TransitionTargetValidator {
-		+Validate(FSM fsm) void
-	}
-	class UnreachableStateValidator {
-		+Validate(FSM fsm) void
-	}
-	class ConsoleRenderer {
-		+Render(FSM fsm) void
-	}
-	class SimpleStateFactory {
-		+Create(String type, String identifier, String name) IState
-	}
-	class Visitor {
-		+Visit(IState state) void
-		+Visit(Transition transition) void
-		+Visit(Trigger trigger) void
-		+Visit(Action action) void
-	}
-	class Program {
-		+Main(String[] args) void
-	}
+    class Program {
+        +Main(args: string[])
+    }
 
-	<<Interface>> IIdentifier
-	<<Interface>> IDrawable
-	<<Interface>> IState
-	<<Interface>> IVisitor
-	<<Interface>> IFSMBuilder
-	<<Interface>> IStateFactory
-	<<Interface>> IFSMValidator
-	<<Interface>> IRenderer
-	<<Enumeration>> ActionType
+    class FileLoader {
+        +Load(filePath: string): List~string~
+    }
 
-	IIdentifier <|-- IState
-	IIdentifier <|-- Action
-	IIdentifier <|-- Trigger
-	IIdentifier <|-- Transition
+    class FSMDirector {
+        -_builder: IFSMBuilder
+        -_parser: FSMParser
+        +ChangeBuilder(builder: IFSMBuilder)
+        +Make(lines: List~string~): IFSMComponent
+    }
 
-	IDrawable <|-- IState
-	IDrawable <|-- Action
-	IDrawable <|-- Trigger
-	IDrawable <|-- Transition
+    class FSMBuilder {
+        -_fsm: FSM
+        -_states: Dictionary~string, State~
+        -_actions: Dictionary~string, Action~
+        -_transitions: Dictionary~string, Transition~
+        -_triggers: Dictionary~string, Trigger~
+        +AddState(parsedState: ParsedState)
+        +AddAction(parsedAction: ParsedAction)
+        +AddTrigger(parsedTrigger: ParsedTrigger)
+        +AddTransition(parsedTransition: ParsedTransition)
+        +Build(): FSM
+        +Reset()
+    }
 
-	FSM o-- "many" IState
-	FSM o-- "many" Action
-	FSM o-- "many" Trigger
-	FSM o-- "many" Transition
+    class FSMParser {
+        +ParseState(line: string): ParsedState
+        +ParseAction(line: string): ParsedAction
+        +ParseTrigger(line: string): ParsedTrigger
+        +ParseTransition(line: string): ParsedTransition
+    }
 
-	IState <|-- InitialState
-	IState <|-- SimpleState
-	IState <|-- CompoundState
-	IState <|-- FinalState
-	CompoundState o-- "many" IState
+    class ValidatorService {
+        -_validators: List~IFSMValidator~
+        +AddValidator(validator: IFSMValidator)
+        +Validate(fsm: FSM)
+    }
 
-	IFSMBuilder <|-- FSMBuilder
-	IStateFactory <|-- SimpleStateFactory
+    class DrawConsoleVisitor {
+        -_outputLines: List~string~
+        +OutputLines: IEnumerable~string~
+        +Print(state: State)
+        +Print(transition: Transition)
+        +Print(trigger: Trigger)
+        +Print(action: Action)
+    }
 
-	FSMDirector o-- IFSMBuilder
-	FSMDirector o-- FSMParser
-	FSMDirector ..> FSM
+    class ConsoleRenderer {
+        +Render(lines: IEnumerable~string~)
+    }
 
-	FSMParser ..> IState
-	FSMParser ..> Transition
-	FSMParser ..> Action
-	FSMParser ..> Trigger
+    class FSM {
+        -_components: List~IFSMComponent~
+        +Components: IEnumerable~IFSMComponent~
+        +Add(component: IFSMComponent)
+        +Remove(component: IFSMComponent)
+        +Print(visitor: IVisitor)
+    }
 
-	ValidatorService o-- "many" IFSMValidator
-	ValidatorService ..> FSM
+    class State {
+        +Name: string
+        +Type: StateType
+        +Actions: List~Action~
+        +Print(visitor: IVisitor)
+    }
 
-	IFSMValidator <|-- DeterministicValidator
-	IFSMValidator <|-- FinalStateOutgoingValidator
-	IFSMValidator <|-- InitialIngoingValidator
-	IFSMValidator <|-- TransitionTargetValidator
-	IFSMValidator <|-- UnreachableStateValidator
+    class Transition {
+        +SourceState: State
+        +TargetState: State
+        +Trigger: string
+        +Action: Action
+        +Guard: string
+        +Print(visitor: IVisitor)
+    }
 
-	IRenderer <|-- ConsoleRenderer
-	IVisitor <|-- Visitor
+    class Action {
+        +Description: string
+        +Type: ActionType
+        +Print(visitor: IVisitor)
+    }
 
-	Program ..> FSMDirector
-	Program ..> FSMBuilder
-	Program ..> ValidatorService
-	Program ..> ConsoleRenderer
-	Program ..> IFSMValidator
+    class Trigger {
+        +Description: string
+        +Print(visitor: IVisitor)
+    }
+
+    class StateFactory {
+        +Create(type: string, name: string): IFSMComponent
+    }
+
+    %% Interfaces
+    class IFSMComponent {
+        <<interface>>
+        +Print(visitor: IVisitor)
+    }
+
+    class IFSMBuilder {
+        <<interface>>
+        +AddState(parsedState: ParsedState)
+        +AddAction(parsedAction: ParsedAction)
+        +AddTrigger(parsedTrigger: ParsedTrigger)
+        +AddTransition(parsedTransition: ParsedTransition)
+        +Build(): FSM
+        +Reset()
+    }
+
+    class IVisitor {
+        <<interface>>
+        +Print(state: State)
+        +Print(transition: Transition)
+        +Print(trigger: Trigger)
+        +Print(action: Action)
+    }
+
+    class IFSMValidator {
+        <<interface>>
+        +Validate(fsm: FSM)
+    }
+
+    class IFSMComponentFactory {
+        <<interface>>
+        +Create(type: string, name: string): IFSMComponent
+    }
+
+    class ILoader {
+        <<interface>>
+        +Load(filePath: string): List~string~
+    }
+
+    class IRenderer {
+        <<interface>>
+        +Render(lines: IEnumerable~string~)
+    }
+
+    %% Relationships
+    Program --> FileLoader
+    Program --> FSMDirector
+    Program --> ValidatorService
+    Program --> DrawConsoleVisitor
+    Program --> ConsoleRenderer
+
+    FSMDirector --> IFSMBuilder
+    FSMDirector --> FSMParser
+    FSMBuilder ..|> IFSMBuilder
+    FSMBuilder --> FSM
+
+    ValidatorService --> IFSMValidator
+    ValidatorService --> FSM
+
+    FSM --> IFSMComponent
+    State ..|> IFSMComponent
+    Transition ..|> IFSMComponent
+    Action ..|> IFSMComponent
+    Trigger ..|> IFSMComponent
+
+    DrawConsoleVisitor ..|> IVisitor
+    FSM --> IVisitor
+    State --> IVisitor
+    Transition --> IVisitor
+    Action --> IVisitor
+    Trigger --> IVisitor
+
+    StateFactory ..|> IFSMComponentFactory
+    FileLoader ..|> ILoader
+    ConsoleRenderer ..|> IRenderer
 ```
 
-## Software Design Patterns
+## Design Patterns
 
 ### 1. Builder Pattern
 
@@ -236,133 +188,142 @@ direction LR
 classDiagram
     class IFSMBuilder {
         <<interface>>
-        +AddState(IState state) void
-        +AddAction(Action action) void
-        +AddTrigger(Trigger trigger) void
-        +AddTransition(Transition transition) void
-        +FSM Build() FSM
-        +Reset() void
+        +AddState(parsedState: ParsedState)
+        +AddAction(parsedAction: ParsedAction)
+        +AddTrigger(parsedTrigger: ParsedTrigger)
+        +AddTransition(parsedTransition: ParsedTransition)
+        +Build(): FSM
+        +Reset()
     }
-    
+
     class FSMBuilder {
-        -FSM _fsm
-        +AddState(IState state) void
-        +AddAction(Action action) void
-        +AddTrigger(Trigger trigger) void
-        +AddTransition(Transition transition) void
-        +FSM Build() FSM
-        +Reset() void
+        -_fsm: FSM
+        -_states: Dictionary~string, State~
+        -_actions: Dictionary~string, Action~
+        -_transitions: Dictionary~string, Transition~
+        -_triggers: Dictionary~string, Trigger~
+        +AddState(parsedState: ParsedState)
+        +AddAction(parsedAction: ParsedAction)
+        +AddTrigger(parsedTrigger: ParsedTrigger)
+        +AddTransition(parsedTransition: ParsedTransition)
+        +Build(): FSM
+        +Reset()
     }
-    
+
     class FSMDirector {
-        -IFSMBuilder _builder
-        -FSMParser _parser
-        +ChangeBuilder(IFSMBuilder builder) void
-        +FSM Build() FSM
-        +FSM BuildFromFile(String filePath) FSM
+        -_builder: IFSMBuilder
+        +ChangeBuilder(builder: IFSMBuilder)
+        +Make(lines: List~string~): IFSMComponent
     }
-    
+
     class FSM {
-        +List~IState~ States
-        +List~Action~ Actions
-        +List~Trigger~ Triggers
-        +List~Transition~ Transitions
+        -_components: List~IFSMComponent~
+        +Components: IEnumerable~IFSMComponent~
+        +Add(component: IFSMComponent)
+        +Remove(component: IFSMComponent)
+        +Print(visitor: IVisitor)
     }
-    
+
     IFSMBuilder <|.. FSMBuilder
-    FSMDirector o-- IFSMBuilder
-    FSMDirector ..> FSM
-    FSMBuilder ..> FSM
+    FSMDirector --> IFSMBuilder
+    FSMBuilder --> FSM
 ```
 
-### 2. Factory Method Pattern
+### 2. Abstract Factory Pattern (Low Binding)
 
 ```mermaid
 classDiagram
-    class IStateFactory {
+    class IFSMComponentFactory {
         <<interface>>
-        +Create(String type, String identifier, String name) IState
+        +Create(type: string, name: string): IFSMComponent
     }
-    
-    class SimpleStateFactory {
-        +Create(String type, String identifier, String name) IState
+
+    class StateFactory {
+        +Create(type: string, name: string): IFSMComponent
     }
-    
-    class IState {
+
+    class IFSMComponent {
         <<interface>>
-        +String Name
+        +Print(visitor: IVisitor)
     }
-    
-    class InitialState {
-        +String Name
-        +String Identifier
+
+    class State {
+        +Name: string
+        +Type: StateType
+        +Actions: List~Action~
+        +Print(visitor: IVisitor)
     }
-    
-    class SimpleState {
-        +String Name
-        +String Identifier
+
+    class Action {
+        +Description: string
+        +Type: ActionType
+        +Print(visitor: IVisitor)
     }
-    
-    class CompoundState {
-        +String Name
-        +String Identifier
-        +List~IState~ SubStates
+
+    class Trigger {
+        +Description: string
+        +Print(visitor: IVisitor)
     }
-    
-    class FinalState {
-        +String Name
-        +String Identifier
-    }
-    
-    IStateFactory <|.. SimpleStateFactory
-    SimpleStateFactory ..> IState
-    IState <|-- InitialState
-    IState <|-- SimpleState
-    IState <|-- CompoundState
-    IState <|-- FinalState
+
+    IFSMComponentFactory <|.. StateFactory
+    StateFactory --> IFSMComponent
+    State ..|> IFSMComponent
+    Action ..|> IFSMComponent
+    Trigger ..|> IFSMComponent
 ```
 
 ### 3. Composite Pattern
 
 ```mermaid
 classDiagram
-    class IState {
+    class IFSMComponent {
         <<interface>>
-        +String Name
-        +Accept(IVisitor visitor) void
+        +Print(visitor: IVisitor)
     }
-    
-    class SimpleState {
-        +String Name
-        +String Identifier
-        +Accept(IVisitor visitor) void
+
+    class FSM {
+        -_components: List~IFSMComponent~
+        +Components: IEnumerable~IFSMComponent~
+        +Add(component: IFSMComponent)
+        +Remove(component: IFSMComponent)
+        +Print(visitor: IVisitor)
     }
-    
-    class CompoundState {
-        +String Name
-        +String Identifier
-        +List~IState~ SubStates
-        +Accept(IVisitor visitor) void
-        +AddSubState(IState subState) void
+
+    class State {
+        +Name: string
+        +Type: StateType
+        +Actions: List~Action~
+        +Print(visitor: IVisitor)
     }
-    
-    class InitialState {
-        +String Name
-        +String Identifier
-        +Accept(IVisitor visitor) void
+
+    class Transition {
+        +SourceState: State
+        +TargetState: State
+        +Trigger: string
+        +Action: Action
+        +Guard: string
+        +Print(visitor: IVisitor)
     }
-    
-    class FinalState {
-        +String Name
-        +String Identifier
-        +Accept(IVisitor visitor) void
+
+    class Action {
+        +Description: string
+        +Type: ActionType
+        +Print(visitor: IVisitor)
     }
-    
-    IState <|-- SimpleState
-    IState <|-- CompoundState
-    IState <|-- InitialState
-    IState <|-- FinalState
-    CompoundState o-- "many" IState
+
+    class Trigger {
+        +Description: string
+        +Print(visitor: IVisitor)
+    }
+
+    IFSMComponent <|-- FSM
+    IFSMComponent <|-- State
+    IFSMComponent <|-- Transition
+    IFSMComponent <|-- Action
+    IFSMComponent <|-- Trigger
+
+    FSM --> IFSMComponent
+    State --> Action
 ```
 
 ### 4. Visitor Pattern
@@ -371,115 +332,114 @@ classDiagram
 classDiagram
     class IVisitor {
         <<interface>>
-        +Visit(IState state) void
-        +Visit(Transition transition) void
-        +Visit(Trigger trigger) void
-        +Visit(Action action) void
+        +Print(state: State)
+        +Print(transition: Transition)
+        +Print(trigger: Trigger)
+        +Print(action: Action)
     }
-    
-    class Visitor {
-        +Visit(IState state) void
-        +Visit(Transition transition) void
-        +Visit(Trigger trigger) void
-        +Visit(Action action) void
+
+    class DrawConsoleVisitor {
+        -_outputLines: List~string~
+        +OutputLines: IEnumerable~string~
+        +Print(state: State)
+        +Print(transition: Transition)
+        +Print(trigger: Trigger)
+        +Print(action: Action)
     }
-    
-    class IDrawable {
+
+    class IFSMComponent {
         <<interface>>
-        +Accept(IVisitor visitor) void
+        +Print(visitor: IVisitor)
     }
-    
-    class IState {
-        <<interface>>
-        +String Name
-        +Accept(IVisitor visitor) void
+
+    class FSM {
+        -_components: List~IFSMComponent~
+        +Components: IEnumerable~IFSMComponent~
+        +Add(component: IFSMComponent)
+        +Remove(component: IFSMComponent)
+        +Print(visitor: IVisitor)
     }
-    
+
+    class State {
+        +Name: string
+        +Type: StateType
+        +Actions: List~Action~
+        +Print(visitor: IVisitor)
+    }
+
     class Transition {
-        +Tuple~IState,IState~ Connection
-        +String Trigger
-        +String Guard
-        +String EffectActionIdentifier
-        +String Identifier
-        +Accept(IVisitor visitor) void
+        +SourceState: State
+        +TargetState: State
+        +Trigger: string
+        +Action: Action
+        +Guard: string
+        +Print(visitor: IVisitor)
     }
-    
+
     class Action {
-        +String Identifier
-        +String Description
-        +ActionType Type
-        +Accept(IVisitor visitor) void
+        +Description: string
+        +Type: ActionType
+        +Print(visitor: IVisitor)
     }
-    
+
     class Trigger {
-        +String Identifier
-        +String Description
-        +Accept(IVisitor visitor) void
+        +Description: string
+        +Print(visitor: IVisitor)
     }
-    
-    IVisitor <|.. Visitor
-    IDrawable <|-- IState
-    IDrawable <|-- Transition
-    IDrawable <|-- Action
-    IDrawable <|-- Trigger
-    Visitor ..> IState
-    Visitor ..> Transition
-    Visitor ..> Action
-    Visitor ..> Trigger
+
+    IVisitor <|.. DrawConsoleVisitor
+    IFSMComponent <|-- FSM
+    IFSMComponent <|-- State
+    IFSMComponent <|-- Transition
+    IFSMComponent <|-- Action
+    IFSMComponent <|-- Trigger
+
+    FSM --> IVisitor
+    State --> IVisitor
+    Transition --> IVisitor
+    Action --> IVisitor
+    Trigger --> IVisitor
 ```
 
-### 5. Strategy Pattern
+### 5. Strategy Pattern (Behavior Pattern)
 
 ```mermaid
 classDiagram
     class IFSMValidator {
         <<interface>>
-        +Validate(FSM fsm) void
+        +Validate(fsm: FSM)
     }
-    
+
     class ValidatorService {
-        -List~IFSMValidator~ _validators
-        +AddValidator(IFSMValidator validator) void
-        +Validate(FSM fsm) void
+        -_validators: List~IFSMValidator~
+        +AddValidator(validator: IFSMValidator)
+        +Validate(fsm: FSM)
     }
-    
+
     class DeterministicValidator {
-        +Validate(FSM fsm) void
+        +Validate(fsm: FSM)
     }
-    
-    class FinalStateOutgoingValidator {
-        +Validate(FSM fsm) void
-    }
-    
-    class InitialIngoingValidator {
-        +Validate(FSM fsm) void
-    }
-    
+
     class TransitionTargetValidator {
-        +Validate(FSM fsm) void
+        +Validate(fsm: FSM)
     }
-    
-    class UnreachableStateValidator {
-        +Validate(FSM fsm) void
+
+    class FinalStateOutgoingValidator {
+        +Validate(fsm: FSM)
     }
-    
+
     class FSM {
-        +List~IState~ States
-        +List~Action~ Actions
-        +List~Trigger~ Triggers
-        +List~Transition~ Transitions
+        -_components: List~IFSMComponent~
+        +Components: IEnumerable~IFSMComponent~
+        +Add(component: IFSMComponent)
+        +Remove(component: IFSMComponent)
+        +Print(visitor: IVisitor)
     }
-    
+
     IFSMValidator <|.. DeterministicValidator
-    IFSMValidator <|.. FinalStateOutgoingValidator
-    IFSMValidator <|.. InitialIngoingValidator
     IFSMValidator <|.. TransitionTargetValidator
-    IFSMValidator <|.. UnreachableStateValidator
-    ValidatorService o-- "many" IFSMValidator
-    ValidatorService ..> FSM
-    DeterministicValidator ..> FSM
-    FinalStateOutgoingValidator ..> FSM
-    InitialIngoingValidator ..> FSM
-    TransitionTargetValidator ..> FSM
-    UnreachableStateValidator ..> FSM
+    IFSMValidator <|.. FinalStateOutgoingValidator
+
+    ValidatorService --> IFSMValidator
+    ValidatorService --> FSM
 ```
