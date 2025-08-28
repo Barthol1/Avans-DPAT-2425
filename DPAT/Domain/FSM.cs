@@ -29,14 +29,5 @@ namespace DPAT.Domain
                 component.Print(visitor);
             }
         }
-
-        public void Validate()
-        {
-            foreach (var component in _components)
-            {
-                component.Validate();
-            }
-        }
-
     }
 }

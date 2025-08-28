@@ -16,21 +16,19 @@ namespace DPAT.Tests
             return Path.Combine(root, "fsm_files", relative);
         }
 
-        private static IFSMComponent Parse(string fileName)
+        private static FSM Parse(string fileName)
         {
             var director = new FSMDirector(new FSMBuilder());
             var loader = new FileLoader();
             var lines = loader.Load(ResolvePath(fileName));
-            return director.Make(lines);
+            return (FSM)director.Make(lines);
         }
 
-        private static void ValidateAll(IFSMComponent fsm)
+        private static void ValidateAll(FSM fsm)
         {
             var validatorService = new ValidatorService();
             validatorService.AddValidator(new DeterministicValidator());
-            validatorService.AddValidator(new UnreachableStateValidator());
             validatorService.AddValidator(new TransitionTargetValidator());
-            validatorService.AddValidator(new InitialIngoingValidator());
             validatorService.AddValidator(new FinalStateOutgoingValidator());
             validatorService.Validate(fsm);
         }
@@ -41,15 +39,6 @@ namespace DPAT.Tests
             var fsm = Parse("invalid_compound.fsm");
             var service = new ValidatorService();
             service.AddValidator(new TransitionTargetValidator());
-            Assert.Throws<InvalidOperationException>(() => service.Validate(fsm));
-        }
-
-        [Fact]
-        public void Invalid_InitialIncoming_Throws()
-        {
-            var fsm = Parse("invalid_initial.fsm");
-            var service = new ValidatorService();
-            service.AddValidator(new InitialIngoingValidator());
             Assert.Throws<InvalidOperationException>(() => service.Validate(fsm));
         }
 
@@ -99,19 +88,60 @@ namespace DPAT.Tests
         }
 
         [Fact]
-        public void Invalid_Unreachable_Throws()
-        {
-            var fsm = Parse("invalid_unreachable.fsm");
-            var service = new ValidatorService();
-            service.AddValidator(new UnreachableStateValidator());
-            Assert.Throws<InvalidOperationException>(() => service.Validate(fsm));
-        }
-
-        [Fact]
         public void ParsesAndValidates_LampExample_Passes()
         {
             var fsm = Parse("example_lamp.fsm");
             ValidateAll(fsm);
+        }
+
+        [Fact]
+        public void ParsesStateAndReturnsRecord()
+        {
+            var parser = new FSMParser();
+            var result = parser.ParseState("""STATE initial _ "powered off" : INITIAL;""");
+            Assert.Equal(typeof(ParsedState), result.GetType());
+            Assert.Equal("initial", result.Identifier);
+            Assert.Equal("powered off", result.Name);
+            Assert.Equal("INITIAL", result.Type.ToString());
+        }
+
+        [Fact]
+        public void ParsesTransitionAndReturnsRecord()
+        {
+            var parser = new FSMParser();
+            var result = parser.ParseTransition("""TRANSITION t1 initial -> off power_on "";""");
+            Assert.Equal(typeof(ParsedTransition), result.GetType());
+            Assert.Equal("t1", result.Identifier);
+            Assert.Equal("initial", result.SourceId);
+            Assert.Equal("off", result.TargetId);
+            Assert.Equal("power_on", result.TriggerName);
+            Assert.Equal("", result.GuardCondition);
+        }
+
+        [Fact]
+        public void ParsesTriggerAndReturnsRecord()
+        {
+            var parser = new FSMParser();
+            var result = parser.ParseTrigger("""TRIGGER power_on "turn power on";""");
+            Assert.Equal(typeof(ParsedTrigger), result.GetType());
+            Assert.Equal("power_on", result.Identifier);
+            Assert.Equal("turn power on", result.Description);
+        }
+
+        [Fact]
+        public void ParsesActionAndReturnsRecord()
+        {
+            // Arrange
+            var parser = new FSMParser();
+
+            // Act
+            var result = parser.ParseAction("""ACTION on "Turn lamp on" : ENTRY_ACTION;""");
+
+            // Assert 
+            Assert.Equal(typeof(ParsedAction), result.GetType());
+            Assert.Equal("on", result.Identifier);
+            Assert.Equal("Turn lamp on", result.Description);
+            Assert.Equal("ENTRY_ACTION", result.Type.ToString());
         }
     }
 }

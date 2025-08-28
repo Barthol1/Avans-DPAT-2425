@@ -10,24 +10,28 @@ namespace DPAT.Presentation
         public static void Main(string[] args)
         {
             ILoader loader = new FileLoader();
-            var lines = loader.Load(args[0]);
+            var filePath = args[0];
+            var lines = loader.Load(filePath);
             var director = new FSMDirector(new FSMBuilder());
 
             IFSMComponent fsm = director.Make(lines);
 
-            // var validatorService = new ValidatorService();
-            // validatorService.AddValidator(new DeterministicValidator());
-            // validatorService.AddValidator(new UnreachableStateValidator());
-            // validatorService.AddValidator(new TransitionTargetValidator());
-            // validatorService.AddValidator(new InitialIngoingValidator());
-            // validatorService.AddValidator(new FinalStateOutgoingValidator());
-            // validatorService.Validate(fsm);
+            if (fsm is not FSM fsmComponent)
+            {
+                throw new InvalidOperationException("FSM component is not a valid FSM object");
+            }
 
-            fsm.Print(new DrawConsoleVisitor());
+            var validatorService = new ValidatorService();
+            validatorService.AddValidator(new DeterministicValidator());
+            validatorService.AddValidator(new TransitionTargetValidator());
+            validatorService.AddValidator(new FinalStateOutgoingValidator());
+            validatorService.Validate(fsmComponent);
+
+            var visitor = new DrawConsoleVisitor();
+            fsm.Print(visitor);
+
+            IRenderer renderer = new ConsoleRenderer();
+            renderer.Render(visitor.OutputLines);
         }
-
-
-
-
     }
 }

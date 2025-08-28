@@ -32,6 +32,7 @@ namespace DPAT.Infrastructure
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
                     continue;
 
+
                 var componentType = line.Split(' ')[0] switch
                 {
                     "STATE" => ComponentType.STATE,
@@ -43,27 +44,35 @@ namespace DPAT.Infrastructure
 
                 if (componentType == ComponentType.STATE)
                 {
-                    var (identifier, name, type) = _parser.ParseState(line);
-                    _builder.AddState(identifier, name, type);
-                }
-                else if (componentType == ComponentType.TRANSITION)
-                {
-                    var (sourceState, targetState, triggerIdentifier, guard, effectActionIdentifier) = _parser.ParseTransition(line);
-                    _builder.AddTransition(sourceState, targetState, triggerIdentifier, guard, effectActionIdentifier);
+                    var parsedState = _parser.ParseState(line);
+                    _builder.AddState(parsedState);
                 }
                 else if (componentType == ComponentType.ACTION)
                 {
-                    var (identifier, description, type) = _parser.ParseAction(line);
-                    _builder.AddAction(identifier, description, type);
+                    var parsedAction = _parser.ParseAction(line);
+                    _builder.AddAction(parsedAction);
                 }
                 else if (componentType == ComponentType.TRIGGER)
                 {
-                    var (identifier, description) = _parser.ParseTrigger(line);
-                    _builder.AddTrigger(identifier, description);
+                    var parsedTrigger = _parser.ParseTrigger(line);
+                    _builder.AddTrigger(parsedTrigger);
                 }
-                else
-                    throw new FormatException($"Invalid line: {line}");
             }
+
+            foreach (string rawLine in lines)
+            {
+                string line = rawLine.Trim();
+
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
+                    continue;
+
+                if (line.StartsWith("TRANSITION"))
+                {
+                    var parsedTransition = _parser.ParseTransition(line);
+                    _builder.AddTransition(parsedTransition);
+                }
+            }
+
             return _builder.Build();
         }
     }

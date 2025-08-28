@@ -3,18 +3,23 @@ using DPAT.Domain;
 
 namespace DPAT.Infrastructure
 {
+    public record ParsedState(string Identifier, string? Parent, string Name, StateType Type);
+    public record ParsedTransition(string Identifier, string SourceId, string TargetId, string? TriggerName, string GuardCondition);
+    public record ParsedAction(string Identifier, string Description, ActionType Type);
+    public record ParsedTrigger(string Identifier, string Description);
+
     public class FSMParser
     {
         private static readonly Regex StateRegex = new($"^STATE\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*|_)\\s+\"([^\"]*)\"\\s*:\\s*(INITIAL|SIMPLE|COMPOUND|FINAL)\\s*;$", RegexOptions.Compiled);
-        private static readonly Regex TransitionRegex = new("^TRANSITION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s*->\\s*([a-zA-Z][a-zA-Z0-9_]*)" +
-                                        $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +
-                                        $"\\s*\"([^\"]*)\"" +
-                                        $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +
-                                        $"\\s*;$", RegexOptions.Compiled);
+        private static readonly Regex TransitionRegex = new($"^TRANSITION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s*->\\s*([a-zA-Z][a-zA-Z0-9_]*)" +
+                                    $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +
+                                    $"(?:\\s*\"([^\"]*)\")?" +
+                                    $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +
+                                    $"\\s*;$", RegexOptions.Compiled);
         private static readonly Regex ActionRegex = new("^ACTION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+\"([^\"]*)\"\\s*:\\s*(ENTRY_ACTION|DO_ACTION|EXIT_ACTION|TRANSITION_ACTION)\\s*;$", RegexOptions.Compiled);
         private static readonly Regex TriggerRegex = new("^TRIGGER\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+\"([^\"]*)\"\\s*;$", RegexOptions.Compiled);
 
-        public (string identifier, string name, StateType type) ParseState(string line)
+        public ParsedState ParseState(string line)
         {
             var match = StateRegex.Match(line);
             if (!match.Success)
@@ -23,6 +28,7 @@ namespace DPAT.Infrastructure
             }
 
             var identifier = match.Groups[1].Value;
+            var parent = match.Groups[2].Value;
             var name = match.Groups[3].Value;
             var type = match.Groups[4].Value;
 
@@ -32,13 +38,13 @@ namespace DPAT.Infrastructure
                 "SIMPLE" => StateType.SIMPLE,
                 "COMPOUND" => StateType.COMPOUND,
                 "FINAL" => StateType.FINAL,
-                _ => throw new NotImplementedException($"Invalid state type: {type}")
+                _ => throw new ArgumentException($"Invalid state type: {type}")
             };
 
-            return (identifier, name, stateType);
+            return new ParsedState(identifier, parent == "_" ? null : parent, name, stateType);
         }
 
-        public (string sourceState, string targetState, string? triggerIdentifier, string? guard, string? effectActionIdentifier) ParseTransition(string line)
+        public ParsedTransition ParseTransition(string line)
         {
             var match = TransitionRegex.Match(line);
             if (!match.Success)
@@ -46,22 +52,22 @@ namespace DPAT.Infrastructure
                 throw new FormatException($"Invalid transition line: {line}");
             }
 
+            var identifier = match.Groups[1].Value;
             var sourceId = match.Groups[2].Value;
-            var destinationId = match.Groups[3].Value;
-            var triggerId = match.Groups[4].Value;
-            var guard = match.Groups[5].Value;
-            var effectActionId = match.Groups[6].Value;
+            var targetId = match.Groups[3].Value;
+            var triggerName = match.Groups[4].Value;
+            var guardCondition = match.Groups[5].Value;
 
-            return (
+            return new ParsedTransition(
+                identifier,
                 sourceId,
-                destinationId,
-                string.IsNullOrEmpty(triggerId) ? null : triggerId,
-                string.IsNullOrEmpty(guard) ? null : guard,
-                string.IsNullOrEmpty(effectActionId) ? null : effectActionId
+                targetId,
+                string.IsNullOrEmpty(triggerName) ? null : triggerName,
+                guardCondition
             );
         }
 
-        public (string identifier, string description, ActionType type) ParseAction(string line)
+        public ParsedAction ParseAction(string line)
         {
             var match = ActionRegex.Match(line);
             if (!match.Success)
@@ -79,13 +85,13 @@ namespace DPAT.Infrastructure
                 "DO_ACTION" => ActionType.DO_ACTION,
                 "EXIT_ACTION" => ActionType.EXIT_ACTION,
                 "TRANSITION_ACTION" => ActionType.TRANSITION_ACTION,
-                _ => throw new NotImplementedException($"Invalid action type: {type}")
+                _ => throw new ArgumentException($"Invalid action type: {type}")
             };
 
-            return (identifier, description, actionType);
+            return new ParsedAction(identifier, description, actionType);
         }
 
-        public (string identifier, string description) ParseTrigger(string line)
+        public ParsedTrigger ParseTrigger(string line)
         {
             var match = TriggerRegex.Match(line);
             if (!match.Success)
@@ -96,7 +102,7 @@ namespace DPAT.Infrastructure
             var identifier = match.Groups[1].Value;
             var description = match.Groups[2].Value;
 
-            return (identifier, description);
+            return new ParsedTrigger(identifier, description);
         }
     }
 }

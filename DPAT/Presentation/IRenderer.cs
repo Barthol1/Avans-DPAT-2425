@@ -5,6 +5,6 @@ namespace DPAT.Presentation
 {
     public interface IRenderer
     {
-        void Render(IFSMComponent fsm);
+        void Render(IEnumerable<string> lines);
     }
 }
