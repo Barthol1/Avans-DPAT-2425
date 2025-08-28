@@ -1,7 +1,4 @@
-﻿using DPAT.Domain;
-using Action = DPAT.Domain.Action;
-
-namespace DPAT.Domain.Interfaces
+﻿namespace DPAT.Domain.Interfaces
 {
     public interface IVisitor
     {

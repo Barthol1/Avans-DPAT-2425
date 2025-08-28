@@ -13,41 +13,42 @@ namespace DPAT.Infrastructure
             _fsm = new FSM();
         }
 
-        public void AddAction(string identifier, string description, ActionType type)
+        public void AddAction(string description, ActionType type = ActionType.TRANSITION_ACTION)
         {
             var action = new Action
             {
-                Identifier = identifier,
                 Description = description,
                 Type = type
             };
             _fsm.Add(action);
         }
 
-        public void AddState(string identifier, string name, StateType type)
+        public void AddState(string name, StateType type)
         {
-            var state = new State(identifier, name, type);
+            var state = new State(name, type)
+            {
+                Name = name,
+                Type = type
+            };
             _fsm.Add(state);
         }
 
-        public void AddTransition(string sourceState, string targetState, string? triggerIdentifier, string? guard, string? effectActionIdentifier)
+        public void AddTransition(State sourceState, State targetState, string? guard, Action? effectAction)
         {
             var transition = new Transition
             {
                 SourceState = sourceState,
                 TargetState = targetState,
-                Trigger = string.IsNullOrEmpty(triggerIdentifier) ? null : triggerIdentifier,
                 Guard = string.IsNullOrEmpty(guard) ? null : guard,
-                EffectActionIdentifier = string.IsNullOrEmpty(effectActionIdentifier) ? null : effectActionIdentifier
+                Action = effectAction
             };
             _fsm.Add(transition);
         }
 
-        public void AddTrigger(string identifier, string description)
+        public void AddTrigger(string description)
         {
-            var trigger = new Trigger(identifier, description)
+            var trigger = new Trigger
             {
-                Identifier = identifier,
                 Description = description
             };
             _fsm.Add(trigger);

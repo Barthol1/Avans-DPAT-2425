@@ -43,23 +43,23 @@ namespace DPAT.Infrastructure
 
                 if (componentType == ComponentType.STATE)
                 {
-                    var (identifier, name, type) = _parser.ParseState(line);
-                    _builder.AddState(identifier, name, type);
+                    var (name, type) = _parser.ParseState(line);
+                    _builder.AddState(name, type);
                 }
                 else if (componentType == ComponentType.TRANSITION)
                 {
-                    var (sourceState, targetState, triggerIdentifier, guard, effectActionIdentifier) = _parser.ParseTransition(line);
-                    _builder.AddTransition(sourceState, targetState, triggerIdentifier, guard, effectActionIdentifier);
+                    var (sourceState, targetState, guard, action) = _parser.ParseTransition(line);
+                    _builder.AddTransition(sourceState, targetState, guard, action);
                 }
                 else if (componentType == ComponentType.ACTION)
                 {
-                    var (identifier, description, type) = _parser.ParseAction(line);
-                    _builder.AddAction(identifier, description, type);
+                    var (description, type) = _parser.ParseAction(line);
+                    _builder.AddAction(description, type);
                 }
                 else if (componentType == ComponentType.TRIGGER)
                 {
-                    var (identifier, description) = _parser.ParseTrigger(line);
-                    _builder.AddTrigger(identifier, description);
+                    var description = _parser.ParseTrigger(line);
+                    _builder.AddTrigger(description);
                 }
                 else
                     throw new FormatException($"Invalid line: {line}");

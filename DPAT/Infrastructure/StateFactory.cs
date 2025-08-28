@@ -5,14 +5,14 @@ namespace DPAT.Infrastructure
 {
     public class StateFactory : IFSMComponentFactory
     {
-        public IFSMComponent Create(string type, string identifier, string name)
+        public IFSMComponent Create(string type, string name)
         {
             return type switch
             {
-                "INITIAL" => new State(identifier, name, StateType.INITIAL),
-                "SIMPLE" => new State(identifier, name, StateType.SIMPLE),
-                "COMPOUND" => new State(identifier, name, StateType.COMPOUND),
-                "FINAL" => new State(identifier, name, StateType.FINAL),
+                "INITIAL" => new State() { Name = name, Type = StateType.INITIAL },
+                "SIMPLE" => new State() { Name = name, Type = StateType.SIMPLE },
+                "COMPOUND" => new State() { Name = name, Type = StateType.COMPOUND },
+                "FINAL" => new State() { Name = name, Type = StateType.FINAL },
                 _ => throw new Exception($"Invalid state type: {type}")
             };
         }

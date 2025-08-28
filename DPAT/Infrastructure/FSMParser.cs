@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using DPAT.Domain;
+using Action = DPAT.Domain.Action;
 
 namespace DPAT.Infrastructure
 {
@@ -14,7 +15,7 @@ namespace DPAT.Infrastructure
         private static readonly Regex ActionRegex = new("^ACTION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+\"([^\"]*)\"\\s*:\\s*(ENTRY_ACTION|DO_ACTION|EXIT_ACTION|TRANSITION_ACTION)\\s*;$", RegexOptions.Compiled);
         private static readonly Regex TriggerRegex = new("^TRIGGER\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+\"([^\"]*)\"\\s*;$", RegexOptions.Compiled);
 
-        public (string identifier, string name, StateType type) ParseState(string line)
+        public (string name, StateType type) ParseState(string line)
         {
             var match = StateRegex.Match(line);
             if (!match.Success)
@@ -22,7 +23,6 @@ namespace DPAT.Infrastructure
                 throw new FormatException($"Invalid state line: {line}");
             }
 
-            var identifier = match.Groups[1].Value;
             var name = match.Groups[3].Value;
             var type = match.Groups[4].Value;
 
@@ -35,33 +35,35 @@ namespace DPAT.Infrastructure
                 _ => throw new NotImplementedException($"Invalid state type: {type}")
             };
 
-            return (identifier, name, stateType);
+            return (name, stateType);
         }
 
-        public (string sourceState, string targetState, string? triggerIdentifier, string? guard, string? effectActionIdentifier) ParseTransition(string line)
+        public (State sourceState, State targetState, string? guard, Action? action) ParseTransition(string line)
         {
+            var sourceState = new State();
+            var targetState = new State();
+            var action = new Action();
+
             var match = TransitionRegex.Match(line);
             if (!match.Success)
             {
                 throw new FormatException($"Invalid transition line: {line}");
             }
 
-            var sourceId = match.Groups[2].Value;
-            var destinationId = match.Groups[3].Value;
-            var triggerId = match.Groups[4].Value;
-            var guard = match.Groups[5].Value;
-            var effectActionId = match.Groups[6].Value;
+            var sourceName = match.Groups[1].Value;
+            var targetName = match.Groups[2].Value;
+            var guard = match.Groups[4].Value;
+            var effectActionName = match.Groups[5].Value;
 
             return (
-                sourceId,
-                destinationId,
-                string.IsNullOrEmpty(triggerId) ? null : triggerId,
+                sourceState,
+                new State() { Name = targetName },
                 string.IsNullOrEmpty(guard) ? null : guard,
-                string.IsNullOrEmpty(effectActionId) ? null : effectActionId
+                string.IsNullOrEmpty(effectActionName) ? null : new Action() { Name = effectActionName }
             );
         }
 
-        public (string identifier, string description, ActionType type) ParseAction(string line)
+        public (string description, ActionType type) ParseAction(string line)
         {
             var match = ActionRegex.Match(line);
             if (!match.Success)
@@ -69,7 +71,6 @@ namespace DPAT.Infrastructure
                 throw new FormatException($"Invalid action line: {line}");
             }
 
-            var identifier = match.Groups[1].Value;
             var description = match.Groups[2].Value;
             var type = match.Groups[3].Value;
 
@@ -82,10 +83,10 @@ namespace DPAT.Infrastructure
                 _ => throw new NotImplementedException($"Invalid action type: {type}")
             };
 
-            return (identifier, description, actionType);
+            return (description, actionType);
         }
 
-        public (string identifier, string description) ParseTrigger(string line)
+        public string ParseTrigger(string line)
         {
             var match = TriggerRegex.Match(line);
             if (!match.Success)
@@ -93,10 +94,9 @@ namespace DPAT.Infrastructure
                 throw new FormatException($"Invalid trigger line: {line}");
             }
 
-            var identifier = match.Groups[1].Value;
             var description = match.Groups[2].Value;
 
-            return (identifier, description);
+            return description;
         }
     }
 }

@@ -4,7 +4,6 @@ namespace DPAT.Domain
 {
     public class Action : IFSMComponent
     {
-        public required string Identifier { get; set; }
         public required string Description { get; set; }
         public required ActionType Type { get; set; }
 
