@@ -1,98 +1,70 @@
-using System.Text.RegularExpressions;
+using System.Runtime.CompilerServices;
 using DPAT.Domain;
 using DPAT.Domain.Interfaces;
-using Action = DPAT.Domain.Action;
+
 
 namespace DPAT.Infrastructure
 {
-    class FSMDirector
+    public class FSMDirector
     {
         private IFSMBuilder _builder;
-        private FSMParser _parser = new FSMParser();
+        private readonly FSMParser _parser;
 
-        public FSMDirector(IFSMBuilder builder)
+        public FSMDirector(IFSMBuilder builder, FSMParser? parser = null)
         {
-            this._builder = builder;
+            _builder = builder;
+            _parser = parser ?? new FSMParser();
         }
 
         public void ChangeBuilder(IFSMBuilder builder)
         {
-            this._builder = builder;
+            _builder = builder;
         }
 
-        public FSM Build()
+        public IFSMComponent Make(List<string> lines)
         {
-            return this._builder.Build();
-        }
+            _builder.Reset();
 
-        public FSM BuildFromFile(string filePath)
-        {
-            var lines = File.ReadAllLines(filePath);
-            var parsedStates = new List<IState>();
-
-
-            foreach (var line in lines)
+            foreach (string rawLine in lines)
             {
-                var trimmedLine = line.Trim();
+                string line = rawLine.Trim();
 
-                if (string.IsNullOrWhiteSpace(trimmedLine) || trimmedLine.StartsWith('#'))
-                {
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
                     continue;
-                }
 
-                if (trimmedLine.StartsWith("STATE"))
+                var componentType = line.Split(' ')[0] switch
                 {
-                    var state = _parser.GetState(trimmedLine);
-                    parsedStates.Add(state);
-                    _builder.AddState(state);
-                }
-                else if (trimmedLine.StartsWith("ACTION"))
+                    "STATE" => ComponentType.STATE,
+                    "TRANSITION" => ComponentType.TRANSITION,
+                    "ACTION" => ComponentType.ACTION,
+                    "TRIGGER" => ComponentType.TRIGGER,
+                    _ => throw new FormatException($"Invalid line: {line}")
+                };
+
+                if (componentType == ComponentType.STATE)
                 {
-                    _builder.AddAction(_parser.GetAction(trimmedLine));
+                    var (identifier, name, type) = _parser.ParseState(line);
+                    _builder.AddState(identifier, name, type);
                 }
-                else if (trimmedLine.StartsWith("TRIGGER"))
+                else if (componentType == ComponentType.TRANSITION)
                 {
-                    _builder.AddTrigger(_parser.GetTrigger(trimmedLine));
+                    var (sourceState, targetState, triggerIdentifier, guard, effectActionIdentifier) = _parser.ParseTransition(line);
+                    _builder.AddTransition(sourceState, targetState, triggerIdentifier, guard, effectActionIdentifier);
                 }
+                else if (componentType == ComponentType.ACTION)
+                {
+                    var (identifier, description, type) = _parser.ParseAction(line);
+                    _builder.AddAction(identifier, description, type);
+                }
+                else if (componentType == ComponentType.TRIGGER)
+                {
+                    var (identifier, description) = _parser.ParseTrigger(line);
+                    _builder.AddTrigger(identifier, description);
+                }
+                else
+                    throw new FormatException($"Invalid line: {line}");
             }
-
-
-            var idToState = parsedStates.ToDictionary(s => s.Identifier, s => s);
-            foreach (var line in lines)
-            {
-                var trimmedLine = line.Trim();
-                if (string.IsNullOrWhiteSpace(trimmedLine) || line.StartsWith('#')) continue;
-                if (trimmedLine.StartsWith("STATE"))
-                {
-                    var match = Regex.Match(trimmedLine, "^STATE\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*|_)\\s+\"([^\"]*)\"\\s*:\\s*(INITIAL|SIMPLE|COMPOUND|FINAL)\\s*;$");
-                    if (!match.Success) continue;
-                    var stateId = match.Groups[1].Value;
-                    var parentId = match.Groups[2].Value;
-                    if (parentId != "_" && idToState.TryGetValue(stateId, out var child) && idToState.TryGetValue(parentId, out var parent) && parent is CompoundState compound)
-                    {
-                        compound.SubStates.Add(child);
-                    }
-                }
-            }
-
-
-            foreach (var line in lines)
-            {
-                var trimmedLine = line.Trim();
-
-                if (string.IsNullOrWhiteSpace(trimmedLine) || trimmedLine.StartsWith('#'))
-                {
-                    continue;
-                }
-
-                if (trimmedLine.StartsWith("TRANSITION"))
-                {
-                    _builder.AddTransition(_parser.GetTransition(trimmedLine, parsedStates));
-                }
-            }
-
-            var fsm = _builder.Build();
-            return fsm;
+            return _builder.Build();
         }
     }
 }

@@ -1,48 +1,49 @@
 using System.Text.RegularExpressions;
 using DPAT.Domain;
-using DPAT.Domain.Interfaces;
-using Action = DPAT.Domain.Action;
 
 namespace DPAT.Infrastructure
 {
     public class FSMParser
     {
-        private readonly IStateFactory _stateFactory;
+        private static readonly Regex StateRegex = new($"^STATE\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*|_)\\s+\"([^\"]*)\"\\s*:\\s*(INITIAL|SIMPLE|COMPOUND|FINAL)\\s*;$", RegexOptions.Compiled);
+        private static readonly Regex TransitionRegex = new("^TRANSITION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s*->\\s*([a-zA-Z][a-zA-Z0-9_]*)" +
+                                        $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +
+                                        $"\\s*\"([^\"]*)\"" +
+                                        $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +
+                                        $"\\s*;$", RegexOptions.Compiled);
+        private static readonly Regex ActionRegex = new("^ACTION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+\"([^\"]*)\"\\s*:\\s*(ENTRY_ACTION|DO_ACTION|EXIT_ACTION|TRANSITION_ACTION)\\s*;$", RegexOptions.Compiled);
+        private static readonly Regex TriggerRegex = new("^TRIGGER\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+\"([^\"]*)\"\\s*;$", RegexOptions.Compiled);
 
-        public FSMParser(IStateFactory? stateFactory = null)
+        public (string identifier, string name, StateType type) ParseState(string line)
         {
-            _stateFactory = stateFactory ?? new SimpleStateFactory();
-        }
-
-        public IState GetState(string line)
-        {
-            var stateRegex = $"^STATE\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*|_)\\s+\"([^\"]*)\"\\s*:\\s*(INITIAL|SIMPLE|COMPOUND|FINAL)\\s*;$";
-            var match = Regex.Match(line, stateRegex);
+            var match = StateRegex.Match(line);
             if (!match.Success)
             {
-                throw new Exception("Invalid state line");
+                throw new FormatException($"Invalid state line: {line}");
             }
 
             var identifier = match.Groups[1].Value;
             var name = match.Groups[3].Value;
             var type = match.Groups[4].Value;
 
-            IState state = _stateFactory.Create(type, identifier, name);
+            var stateType = type switch
+            {
+                "INITIAL" => StateType.INITIAL,
+                "SIMPLE" => StateType.SIMPLE,
+                "COMPOUND" => StateType.COMPOUND,
+                "FINAL" => StateType.FINAL,
+                _ => throw new NotImplementedException($"Invalid state type: {type}")
+            };
 
-            return state;
+            return (identifier, name, stateType);
         }
 
-        public Transition GetTransition(string line, IEnumerable<IState> states)
+        public (string sourceState, string targetState, string? triggerIdentifier, string? guard, string? effectActionIdentifier) ParseTransition(string line)
         {
-            var transitionRegexPattern = $"^TRANSITION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s*->\\s*([a-zA-Z][a-zA-Z0-9_]*)" +
-                                    $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +
-                                    $"(?:\\s*\"([^\"]*)\")?" +
-                                    $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +
-                                    $"\\s*;$";
-            var match = Regex.Match(line, transitionRegexPattern);
+            var match = TransitionRegex.Match(line);
             if (!match.Success)
             {
-                throw new Exception("Invalid transition line: " + line);
+                throw new FormatException($"Invalid transition line: {line}");
             }
 
             var sourceId = match.Groups[2].Value;
@@ -51,82 +52,51 @@ namespace DPAT.Infrastructure
             var guard = match.Groups[5].Value;
             var effectActionId = match.Groups[6].Value;
 
-
-            var source = states.FirstOrDefault(s => s.Identifier == sourceId);
-            var destination = states.FirstOrDefault(s => s.Identifier == destinationId);
-
-            if (source == null)
-            {
-                throw new Exception($"Source state '{sourceId}' not found");
-            }
-            if (destination == null)
-            {
-                throw new Exception($"Destination state '{destinationId}' not found");
-            }
-
-            var transition = new Transition
-            {
-                Connection = new Tuple<IState, IState>(source, destination),
-                Identifier = match.Groups[1].Value,
-                Trigger = string.IsNullOrEmpty(triggerId) ? null : triggerId,
-                Guard = string.IsNullOrEmpty(guard) ? null : guard,
-                EffectActionIdentifier = string.IsNullOrEmpty(effectActionId) ? null : effectActionId
-            };
-
-            return transition;
+            return (
+                sourceId,
+                destinationId,
+                string.IsNullOrEmpty(triggerId) ? null : triggerId,
+                string.IsNullOrEmpty(guard) ? null : guard,
+                string.IsNullOrEmpty(effectActionId) ? null : effectActionId
+            );
         }
 
-        public Action GetAction(string line)
+        public (string identifier, string description, ActionType type) ParseAction(string line)
         {
-            var actionRegex = $"^ACTION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+\"([^\"]*)\"\\s*:\\s*(ENTRY_ACTION|DO_ACTION|EXIT_ACTION|TRANSITION_ACTION)\\s*;$";
-            var match = Regex.Match(line, actionRegex);
+            var match = ActionRegex.Match(line);
             if (!match.Success)
             {
-                throw new NotSupportedException("Invalid action line");
+                throw new FormatException($"Invalid action line: {line}");
             }
 
-            var actionId = match.Groups[1].Value;
-            var actionDescription = match.Groups[2].Value;
-            var actionType = match.Groups[3].Value;
+            var identifier = match.Groups[1].Value;
+            var description = match.Groups[2].Value;
+            var type = match.Groups[3].Value;
 
-            ActionType actionTypeEnum = actionType switch
+            var actionType = type switch
             {
                 "ENTRY_ACTION" => ActionType.ENTRY_ACTION,
                 "DO_ACTION" => ActionType.DO_ACTION,
                 "EXIT_ACTION" => ActionType.EXIT_ACTION,
                 "TRANSITION_ACTION" => ActionType.TRANSITION_ACTION,
-                _ => throw new NotSupportedException("Invalid action type")
+                _ => throw new NotImplementedException($"Invalid action type: {type}")
             };
 
-            Action action = new()
-            {
-                Identifier = actionId,
-                Description = actionDescription,
-                Type = actionTypeEnum
-            };
-
-            return action;
+            return (identifier, description, actionType);
         }
 
-        public Trigger GetTrigger(string line)
+        public (string identifier, string description) ParseTrigger(string line)
         {
-            var triggerRegex = $"^TRIGGER\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+\"([^\"]*)\"\\s*;$";
-            var match = Regex.Match(line, triggerRegex);
+            var match = TriggerRegex.Match(line);
             if (!match.Success)
             {
-                throw new NotSupportedException("Invalid trigger line");
+                throw new FormatException($"Invalid trigger line: {line}");
             }
 
-            var triggerId = match.Groups[1].Value;
-            var triggerDescription = match.Groups[2].Value;
+            var identifier = match.Groups[1].Value;
+            var description = match.Groups[2].Value;
 
-            Trigger trigger = new()
-            {
-                Identifier = triggerId,
-                Description = triggerDescription
-            };
-
-            return trigger;
+            return (identifier, description);
         }
     }
 }

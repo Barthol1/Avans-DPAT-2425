@@ -2,14 +2,14 @@ using DPAT.Domain.Interfaces;
 
 namespace DPAT.Domain
 {
-    public class Trigger: IFSMComponent
+    public class Trigger(string identifier, string description) : IFSMComponent
     {
-        public required string Identifier { get; set; }
-        public required string Description { get; set; }
-        
-        public void Print()
+        public required string Identifier { get; set; } = identifier;
+        public required string Description { get; set; } = description;
+
+        public void Print(IVisitor visitor)
         {
-            throw new NotImplementedException();
+            visitor.Print(this);
         }
 
         public void Validate()

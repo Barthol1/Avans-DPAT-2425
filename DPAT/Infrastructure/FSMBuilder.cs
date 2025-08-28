@@ -10,49 +10,57 @@ namespace DPAT.Infrastructure
 
         public FSMBuilder()
         {
-            this._fsm = new FSM()
+            _fsm = new FSM();
+        }
+
+        public void AddAction(string identifier, string description, ActionType type)
+        {
+            var action = new Action
             {
-                Actions = new List<Action>(),
-                States = new List<IState>(),
-                Transitions = new List<Transition>(),
-                Triggers = new List<Trigger>()
+                Identifier = identifier,
+                Description = description,
+                Type = type
             };
+            _fsm.Add(action);
         }
 
-        public void AddAction(Action action)
+        public void AddState(string identifier, string name, StateType type)
         {
-            this._fsm.Actions.Add(action);
+            var state = new State(identifier, name, type);
+            _fsm.Add(state);
         }
 
-        public void AddState(IState state)
+        public void AddTransition(string sourceState, string targetState, string? triggerIdentifier, string? guard, string? effectActionIdentifier)
         {
-            this._fsm.States.Add(state);
+            var transition = new Transition
+            {
+                SourceState = sourceState,
+                TargetState = targetState,
+                Trigger = string.IsNullOrEmpty(triggerIdentifier) ? null : triggerIdentifier,
+                Guard = string.IsNullOrEmpty(guard) ? null : guard,
+                EffectActionIdentifier = string.IsNullOrEmpty(effectActionIdentifier) ? null : effectActionIdentifier
+            };
+            _fsm.Add(transition);
         }
 
-        public void AddTransition(Transition transition)
+        public void AddTrigger(string identifier, string description)
         {
-            this._fsm.Transitions.Add(transition);
-        }
-
-        public void AddTrigger(Trigger trigger)
-        {
-            this._fsm.Triggers.Add(trigger);
+            var trigger = new Trigger(identifier, description)
+            {
+                Identifier = identifier,
+                Description = description
+            };
+            _fsm.Add(trigger);
         }
 
         public FSM Build()
         {
-            return this._fsm;
+            return _fsm;
         }
 
         public void Reset()
         {
-            this._fsm = new FSM()
-            {
-                Actions = new List<Action>(),
-                States = new List<IState>(),
-                Transitions = new List<Transition>(),
-                Triggers = new List<Trigger>()
-            };
+            _fsm = new FSM();
         }
     }
 }

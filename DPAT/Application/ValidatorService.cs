@@ -12,7 +12,7 @@ namespace DPAT.Application
             _validators.Add(validator);
         }
 
-        public void Validate(FSM fsm)
+        public void Validate(IFSMComponent fsm)
         {
             foreach (var validator in _validators)
             {

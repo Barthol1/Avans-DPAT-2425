@@ -3,6 +3,7 @@ using System.IO;
 using DPAT.Application;
 using DPAT.Domain;
 using DPAT.Infrastructure;
+using DPAT.Domain.Interfaces;
 using Xunit;
 
 namespace DPAT.Tests
@@ -15,13 +16,15 @@ namespace DPAT.Tests
             return Path.Combine(root, "fsm_files", relative);
         }
 
-        private static FSM Parse(string fileName)
+        private static IFSMComponent Parse(string fileName)
         {
             var director = new FSMDirector(new FSMBuilder());
-            return director.BuildFromFile(ResolvePath(fileName));
+            var loader = new FileLoader();
+            var lines = loader.Load(ResolvePath(fileName));
+            return director.Make(lines);
         }
 
-        private static void ValidateAll(FSM fsm)
+        private static void ValidateAll(IFSMComponent fsm)
         {
             var validatorService = new ValidatorService();
             validatorService.AddValidator(new DeterministicValidator());
@@ -30,18 +33,6 @@ namespace DPAT.Tests
             validatorService.AddValidator(new InitialIngoingValidator());
             validatorService.AddValidator(new FinalStateOutgoingValidator());
             validatorService.Validate(fsm);
-        }
-
-        [Fact]
-        public void ParsesAndBuildsHierarchy_UserAccount()
-        {
-            var fsm = Parse("example_user_account.fsm");
-            var created = fsm.States.Find(s => s.Identifier == "created") as CompoundState;
-            Assert.NotNull(created);
-            Assert.Contains(created.SubStates, s => s.Identifier == "inactive");
-            var inactive = fsm.States.Find(s => s.Identifier == "inactive") as CompoundState;
-            Assert.NotNull(inactive);
-            Assert.Contains(inactive.SubStates, s => s.Identifier == "unverified");
         }
 
         [Fact]

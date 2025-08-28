@@ -4,30 +4,36 @@ namespace DPAT.Domain
 {
     public class FSM : IFSMComponent
     {
-        private List<IFSMComponent> components;
+        private readonly List<IFSMComponent> _components;
+        public IEnumerable<IFSMComponent> Components => _components.AsReadOnly();
+
         public FSM()
         {
-            components = new List<IFSMComponent>();
+            _components = [];
         }
 
         public void Add(IFSMComponent component)
         {
-            components.Add(component);
+            _components.Add(component);
         }
 
-        public void Remove(IFSMComponent component) {
-            components.Remove(component);
-        }
-
-        public void Print()
+        public void Remove(IFSMComponent component)
         {
-            foreach (var component in components) {
-                component.Print();
+            _components.Remove(component);
+        }
+
+        public void Print(IVisitor visitor)
+        {
+            foreach (var component in _components)
+            {
+                component.Print(visitor);
             }
         }
 
-        public void Validate() {
-            foreach (var component in components) {
+        public void Validate()
+        {
+            foreach (var component in _components)
+            {
                 component.Validate();
             }
         }
