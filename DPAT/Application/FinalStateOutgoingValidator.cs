@@ -5,9 +5,15 @@ namespace DPAT.Application
 {
     public class FinalStateOutgoingValidator : IFSMValidator
     {
-        public void Validate(IFSMComponent fsm)
+        public void Validate(FSM fsm)
         {
-            throw new NotImplementedException();
+            foreach (var transition in fsm.Components.OfType<Transition>())
+            {
+                if (transition.SourceState.Type == StateType.FINAL)
+                {
+                    throw new InvalidOperationException($"Final state '{transition.SourceState.Name}' cannot have outgoing transitions.");
+                }
+            }
         }
     }
 }

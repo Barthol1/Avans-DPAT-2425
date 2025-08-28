@@ -5,9 +5,15 @@ namespace DPAT.Application
 {
     public class TransitionTargetValidator : IFSMValidator
     {
-        public void Validate(IFSMComponent fsm)
+        public void Validate(FSM fsm)
         {
-            throw new NotImplementedException();
+            foreach (var transition in fsm.Components.OfType<Transition>())
+            {
+                if (transition.TargetState.Type == StateType.COMPOUND)
+                {
+                    throw new InvalidOperationException($"Transition {transition.SourceState.Name} -> {transition.TargetState.Name} targets a compound state '{transition.TargetState.Name}' instead of one of its children.");
+                }
+            }
         }
     }
 }

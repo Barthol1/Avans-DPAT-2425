@@ -11,10 +11,5 @@ namespace DPAT.Domain
         {
             visitor.Print(this);
         }
-
-        public void Validate()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -5,7 +5,7 @@ namespace DPAT.Application
 {
     public class InitialIngoingValidator : IFSMValidator
     {
-        public void Validate(IFSMComponent fsm)
+        public void Validate(FSM fsm)
         {
             throw new NotImplementedException();
         }

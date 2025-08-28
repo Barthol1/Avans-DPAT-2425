@@ -11,7 +11,11 @@ namespace DPAT.Infrastructure
     public class FSMParser
     {
         private static readonly Regex StateRegex = new($"^STATE\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*|_)\\s+\"([^\"]*)\"\\s*:\\s*(INITIAL|SIMPLE|COMPOUND|FINAL)\\s*;$", RegexOptions.Compiled);
-        private static readonly Regex TransitionRegex = new("^TRANSITION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s*->\\s*([a-zA-Z][a-zA-Z0-9_]*)(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?\\s*\"([^\"]*)\"\\s*;$", RegexOptions.Compiled);
+        private static readonly Regex TransitionRegex = new($"^TRANSITION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s*->\\s*([a-zA-Z][a-zA-Z0-9_]*)" +
+                                    $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +
+                                    $"(?:\\s*\"([^\"]*)\")?" +
+                                    $"(?:\\s+([a-zA-Z][a-zA-Z0-9_]*))?" +
+                                    $"\\s*;$", RegexOptions.Compiled);
         private static readonly Regex ActionRegex = new("^ACTION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+\"([^\"]*)\"\\s*:\\s*(ENTRY_ACTION|DO_ACTION|EXIT_ACTION|TRANSITION_ACTION)\\s*;$", RegexOptions.Compiled);
         private static readonly Regex TriggerRegex = new("^TRIGGER\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+\"([^\"]*)\"\\s*;$", RegexOptions.Compiled);
 

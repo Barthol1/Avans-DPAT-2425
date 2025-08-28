@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DPAT.Domain;
+﻿using DPAT.Domain;
 using DPAT.Domain.Interfaces;
 using Action = DPAT.Domain.Action;
 
@@ -16,7 +13,7 @@ namespace DPAT.Presentation
 
         public void Print(Transition transition)
         {
-            Console.WriteLine($"Transition: {transition.SourceState} -> {transition.TargetState} - {transition.Trigger} - {transition.Guard}");
+            Console.WriteLine($"Transition: {transition.SourceState.Name} -> {transition.TargetState.Name} - {transition.Trigger} - {transition.Guard}");
         }
 
         public void Print(Trigger trigger)
