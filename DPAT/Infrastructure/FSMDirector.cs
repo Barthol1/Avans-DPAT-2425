@@ -25,6 +25,7 @@ namespace DPAT.Infrastructure
         {
             _builder.Reset();
 
+            // First pass: Parse and add all states, actions, and triggers
             foreach (string rawLine in lines)
             {
                 string line = rawLine.Trim();
@@ -43,27 +44,36 @@ namespace DPAT.Infrastructure
 
                 if (componentType == ComponentType.STATE)
                 {
-                    var (name, type) = _parser.ParseState(line);
-                    _builder.AddState(name, type);
-                }
-                else if (componentType == ComponentType.TRANSITION)
-                {
-                    var (sourceState, targetState, guard, action) = _parser.ParseTransition(line);
-                    _builder.AddTransition(sourceState, targetState, guard, action);
+                    var parsedState = _parser.ParseState(line);
+                    _builder.AddState(parsedState);
                 }
                 else if (componentType == ComponentType.ACTION)
                 {
-                    var (description, type) = _parser.ParseAction(line);
-                    _builder.AddAction(description, type);
+                    var parsedAction = _parser.ParseAction(line);
+                    _builder.AddAction(parsedAction);
                 }
                 else if (componentType == ComponentType.TRIGGER)
                 {
-                    var description = _parser.ParseTrigger(line);
-                    _builder.AddTrigger(description);
+                    var parsedTrigger = _parser.ParseTrigger(line);
+                    _builder.AddTrigger(parsedTrigger);
                 }
-                else
-                    throw new FormatException($"Invalid line: {line}");
             }
+
+            // Second pass: Add transitions (requires states to be created first)
+            foreach (string rawLine in lines)
+            {
+                string line = rawLine.Trim();
+
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
+                    continue;
+
+                if (line.StartsWith("TRANSITION"))
+                {
+                    var parsedTransition = _parser.ParseTransition(line);
+                    _builder.AddTransition(parsedTransition);
+                }
+            }
+
             return _builder.Build();
         }
     }
