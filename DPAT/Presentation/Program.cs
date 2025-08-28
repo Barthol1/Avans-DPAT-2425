@@ -9,16 +9,11 @@ namespace DPAT.Presentation
     {
         public static void Main(string[] args)
         {
-            if (args.Length == 0)
-            {
-                Console.Error.WriteLine("Usage: DPAT <path-to-fsm-file>");
-                Environment.Exit(1);
-                return;
-            }
-            var path = Path.GetFullPath(args[0]);
+            ILoader loader = new FileLoader();
+            var lines = loader.Load(args[0]);
             var director = new FSMDirector(new FSMBuilder());
 
-            IFSMComponent fsm = director.BuildFromFile(path);
+            IFSMComponent fsm = director.Make(lines);
 
             // var validatorService = new ValidatorService();
             // validatorService.AddValidator(new DeterministicValidator());

@@ -19,7 +19,9 @@ namespace DPAT.Tests
         private static IFSMComponent Parse(string fileName)
         {
             var director = new FSMDirector(new FSMBuilder());
-            return director.BuildFromFile(ResolvePath(fileName));
+            var loader = new FileLoader();
+            var lines = loader.Load(ResolvePath(fileName));
+            return director.Make(lines);
         }
 
         private static void ValidateAll(IFSMComponent fsm)

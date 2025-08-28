@@ -6,10 +6,10 @@ namespace DPAT.Infrastructure
 {
     public interface IFSMBuilder
     {
-        public void AddState(State state);
-        public void AddAction(Action action);
-        public void AddTrigger(Trigger trigger);
-        public void AddTransition(Transition transition);
+        public void AddState(string identifier, string name, StateType type);
+        public void AddAction(string identifier, string description, ActionType type);
+        public void AddTrigger(string identifier, string description);
+        public void AddTransition(string sourceState, string targetState, string? triggerIdentifier, string? guard, string? effectActionIdentifier);
         FSM Build();
         void Reset();
     }

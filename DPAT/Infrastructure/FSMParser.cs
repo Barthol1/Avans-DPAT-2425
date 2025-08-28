@@ -1,6 +1,5 @@
 using System.Text.RegularExpressions;
 using DPAT.Domain;
-using Action = DPAT.Domain.Action;
 
 namespace DPAT.Infrastructure
 {
@@ -15,7 +14,7 @@ namespace DPAT.Infrastructure
         private static readonly Regex ActionRegex = new("^ACTION\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+\"([^\"]*)\"\\s*:\\s*(ENTRY_ACTION|DO_ACTION|EXIT_ACTION|TRANSITION_ACTION)\\s*;$", RegexOptions.Compiled);
         private static readonly Regex TriggerRegex = new("^TRIGGER\\s+([a-zA-Z][a-zA-Z0-9_]*)\\s+\"([^\"]*)\"\\s*;$", RegexOptions.Compiled);
 
-        public State GetState(string line)
+        public (string identifier, string name, StateType type) ParseState(string line)
         {
             var match = StateRegex.Match(line);
             if (!match.Success)
@@ -27,13 +26,19 @@ namespace DPAT.Infrastructure
             var name = match.Groups[3].Value;
             var type = match.Groups[4].Value;
 
-            var stateFactory = new StateFactory();
-            var state = stateFactory.Create(type, identifier, name);
+            var stateType = type switch
+            {
+                "INITIAL" => StateType.INITIAL,
+                "SIMPLE" => StateType.SIMPLE,
+                "COMPOUND" => StateType.COMPOUND,
+                "FINAL" => StateType.FINAL,
+                _ => throw new NotImplementedException($"Invalid state type: {type}")
+            };
 
-            return (State)state;
+            return (identifier, name, stateType);
         }
 
-        public Transition GetTransition(string line)
+        public (string sourceState, string targetState, string? triggerIdentifier, string? guard, string? effectActionIdentifier) ParseTransition(string line)
         {
             var match = TransitionRegex.Match(line);
             if (!match.Success)
@@ -47,19 +52,16 @@ namespace DPAT.Infrastructure
             var guard = match.Groups[5].Value;
             var effectActionId = match.Groups[6].Value;
 
-            var transition = new Transition
-            {
-                SourceState = sourceId,
-                TargetState = destinationId,
-                Trigger = string.IsNullOrEmpty(triggerId) ? null : triggerId,
-                EffectActionIdentifier = string.IsNullOrEmpty(effectActionId) ? null : effectActionId,
-                Guard = string.IsNullOrEmpty(guard) ? null : guard
-            };
-
-            return transition;
+            return (
+                sourceId,
+                destinationId,
+                string.IsNullOrEmpty(triggerId) ? null : triggerId,
+                string.IsNullOrEmpty(guard) ? null : guard,
+                string.IsNullOrEmpty(effectActionId) ? null : effectActionId
+            );
         }
 
-        public Action GetAction(string line)
+        public (string identifier, string description, ActionType type) ParseAction(string line)
         {
             var match = ActionRegex.Match(line);
             if (!match.Success)
@@ -71,24 +73,19 @@ namespace DPAT.Infrastructure
             var description = match.Groups[2].Value;
             var type = match.Groups[3].Value;
 
-            var action = new Action
+            var actionType = type switch
             {
-                Identifier = identifier,
-                Description = description,
-                Type = type switch
-                {
-                    "ENTRY_ACTION" => ActionType.ENTRY_ACTION,
-                    "DO_ACTION" => ActionType.DO_ACTION,
-                    "EXIT_ACTION" => ActionType.EXIT_ACTION,
-                    "TRANSITION_ACTION" => ActionType.TRANSITION_ACTION,
-                    _ => throw new NotImplementedException($"Invalid action type: {type}")
-                }
+                "ENTRY_ACTION" => ActionType.ENTRY_ACTION,
+                "DO_ACTION" => ActionType.DO_ACTION,
+                "EXIT_ACTION" => ActionType.EXIT_ACTION,
+                "TRANSITION_ACTION" => ActionType.TRANSITION_ACTION,
+                _ => throw new NotImplementedException($"Invalid action type: {type}")
             };
 
-            return action;
+            return (identifier, description, actionType);
         }
 
-        public Trigger GetTrigger(string line)
+        public (string identifier, string description) ParseTrigger(string line)
         {
             var match = TriggerRegex.Match(line);
             if (!match.Success)
@@ -99,11 +96,7 @@ namespace DPAT.Infrastructure
             var identifier = match.Groups[1].Value;
             var description = match.Groups[2].Value;
 
-            return new Trigger(identifier, description)
-            {
-                Identifier = identifier,
-                Description = description
-            };
+            return (identifier, description);
         }
     }
 }
