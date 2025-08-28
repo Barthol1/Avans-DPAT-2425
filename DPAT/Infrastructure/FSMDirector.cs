@@ -33,6 +33,7 @@ namespace DPAT.Infrastructure
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
                     continue;
 
+                // Get first word of the line
                 var componentType = line.Split(' ')[0] switch
                 {
                     "STATE" => ComponentType.STATE,

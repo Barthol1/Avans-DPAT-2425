@@ -10,7 +10,8 @@ namespace DPAT.Presentation
         public static void Main(string[] args)
         {
             ILoader loader = new FileLoader();
-            var lines = loader.Load(args[0]);
+            var filePath = args[0];
+            var lines = loader.Load(filePath);
             var director = new FSMDirector(new FSMBuilder());
 
             IFSMComponent fsm = director.Make(lines);
