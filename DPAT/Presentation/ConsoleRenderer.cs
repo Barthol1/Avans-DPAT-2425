@@ -5,9 +5,12 @@ namespace DPAT.Presentation
 {
     public class ConsoleRenderer : IRenderer
     {
-        public void Render(IFSMComponent fsm)
+        public void Render(IEnumerable<string> lines)
         {
-            throw new NotImplementedException();
+            foreach (var line in lines)
+            {
+                Console.WriteLine(line);
+            }
         }
     }
 }

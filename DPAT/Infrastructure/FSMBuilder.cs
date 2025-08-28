@@ -9,6 +9,7 @@ namespace DPAT.Infrastructure
         private FSM _fsm;
         private readonly Dictionary<string, State> _states = new();
         private readonly Dictionary<string, Action> _actions = new();
+        private readonly Dictionary<string, Transition> _transitions = new();
         private readonly Dictionary<string, Trigger> _triggers = new();
 
         public FSMBuilder()
@@ -27,6 +28,11 @@ namespace DPAT.Infrastructure
             };
             _actions[parsedAction.Identifier] = action;
             _fsm.Add(action);
+
+            if (parsedAction.Type != ActionType.TRANSITION_ACTION && _states.TryGetValue(parsedAction.Identifier, out var state))
+            {
+                state.Actions.Add(action);
+            }
         }
 
 
@@ -64,7 +70,14 @@ namespace DPAT.Infrastructure
                 transition.Trigger = parsedTransition.TriggerName;
             }
 
+            // If there is a transition action defined with the same identifier, attach it
+            if (_actions.TryGetValue(parsedTransition.Identifier, out var action) && action.Type == ActionType.TRANSITION_ACTION)
+            {
+                transition.Action = action;
+            }
+
             _fsm.Add(transition);
+            _transitions[parsedTransition.Identifier] = transition;
         }
 
 

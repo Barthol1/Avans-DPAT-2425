@@ -24,11 +24,11 @@ namespace DPAT.Presentation
             validatorService.AddValidator(new FinalStateOutgoingValidator());
             validatorService.Validate((FSM)fsm);
 
-            fsm.Print(new DrawConsoleVisitor());
+            var visitor = new DrawConsoleVisitor();
+            fsm.Print(visitor);
+
+            IRenderer renderer = new ConsoleRenderer();
+            renderer.Render(visitor.OutputLines);
         }
-
-
-
-
     }
 }
